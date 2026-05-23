@@ -63,11 +63,14 @@
         #dogrulama-kutusu p { color: #666; font-size: 14px; line-height: 1.5; }
 
         #acil-buton {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background-color: #ff0033; color: white; border: none; padding: 15px 30px;
             font-size: 20px; font-weight: bold; border-radius: 50px;
             box-shadow: 0px 8px 15px rgba(255, 0, 51, 0.4); z-index: 999; cursor: pointer;
             width: 80%; max-width: 300px; text-align: center;
+        }
+        .leaflet-bottom.leaflet-left {
+            bottom: 145px !important;
         }
         #risk-buton {
             position: fixed; top: 20px; right: 20px; background-color: #ffcc00;
@@ -345,6 +348,10 @@
             guncelBoylam = position.coords.longitude;
             if (!harita) {
                 harita = L.map('map').setView([guncelEnlem, guncelBoylam], 16);
+	let normalHarita = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' });
+	let uyduHarita = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: '© Esri' });
+	normalHarita.addTo(harita);
+	L.control.layers({ "🗺️ Normal": normalHarita, "🛰️ Uydu": uyduHarita }, {}, { position: 'bottomleft' }).addTo(harita);
                 // NORMAL HARİTA KATMANI
                 let normalHarita = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19, attribution: '© OpenStreetMap'
@@ -569,4 +576,4 @@
         }
     </script>
 </body>
-</html> 
+</html>
