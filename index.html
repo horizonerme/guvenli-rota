@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GüvenliRota AI - Ana Ekran</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; }
+        #map { height: 100vh; width: 100vw; z-index: 1; }
+
+        #giris-ekrani {
+            display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            z-index: 99998; justify-content: center; align-items: center; flex-direction: column;
+        }
+        #giris-kutusu {
+            background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px;
+            width: 85%; max-width: 350px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #giris-kutusu h2 { margin: 0 0 5px 0; color: #1a1a2e; font-size: 22px; }
+        #giris-kutusu p { margin: 0 0 20px 0; color: #666; font-size: 13px; }
+        .giris-input {
+            width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e0e0e0;
+            border-radius: 10px; font-size: 15px; box-sizing: border-box; outline: none;
+        }
+        .giris-input:focus { border-color: #0f3460; }
+        .giris-btn {
+            width: 100%; padding: 13px; margin: 8px 0; border: none; border-radius: 10px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        #btn-giris { background: #0f3460; color: white; }
+        #btn-kayit { background: #28a745; color: white; }
+        #giris-hata { font-size: 13px; margin: 5px 0; min-height: 18px; }
+        #giris-sekme {
+            display: flex; margin-bottom: 20px; border-radius: 10px; overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+        .sekme-btn {
+            flex: 1; padding: 10px; border: none; cursor: pointer; font-size: 14px;
+            font-weight: bold; background: #f5f5f5; color: #666;
+        }
+        .sekme-btn.aktif { background: #0f3460; color: white; }
+
+        #dogrulama-ekrani {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            z-index: 99998; justify-content: center; align-items: center; flex-direction: column;
+        }
+        #dogrulama-kutusu {
+            background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px;
+            width: 85%; max-width: 350px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #dogrulama-kutusu h2 { color: #1a1a2e; font-size: 20px; margin-bottom: 10px; }
+        #dogrulama-kutusu p { color: #666; font-size: 14px; line-height: 1.5; }
+
+        #acil-buton {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background-color: #ff0033; color: white; border: none; padding: 15px 30px;
+            font-size: 20px; font-weight: bold; border-radius: 50px;
+            box-shadow: 0px 8px 15px rgba(255, 0, 51, 0.4); z-index: 999; cursor: pointer;
+            width: 80%; max-width: 300px; text-align: center;
+        }
+        #risk-buton {
+            position: fixed; top: 20px; right: 20px; background-color: #ffcc00;
+            color: #333; border: none; padding: 12px 20px; font-size: 16px;
+            font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+            z-index: 999; cursor: pointer;
+        }
+        #guven-puani-rozet {
+            position: fixed; top: 20px; left: 20px; background-color: #28a745;
+            color: white; padding: 8px 15px; font-size: 14px; font-weight: bold;
+            border-radius: 20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999;
+        }
+        #ayarlar-buton {
+            position: fixed; top: 65px; left: 20px; background-color: #6c757d;
+            color: white; border: none; padding: 8px 15px; font-size: 13px;
+            font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+            z-index: 999; cursor: pointer;
+        }
+        #risk-menusu {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: white; padding: 20px; border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.5); z-index: 1000; width: 80%; max-width: 300px; text-align: center;
+        }
+        .risk-secenek {
+            display: block; width: 100%; padding: 10px; margin: 10px 0; background: #f1f1f1;
+            border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
+        }
+        #menu-kapat { background: #ccc; margin-top: 15px; }
+        .dogrula-btn {
+            display: block; background: #007bff; color: white; border: none; padding: 6px 10px;
+            border-radius: 5px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px;
+        }
+        #acil-alarm-ekrani {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: rgba(255, 0, 0, 0.85); z-index: 99999; color: white;
+            text-align: center; justify-content: center; align-content: center; flex-direction: column;
+            animation: flasorEfekti 0.6s infinite alternate;
+        }
+        @keyframes flasorEfekti {
+            from { background-color: rgba(255, 0, 0, 0.9); }
+            to { background-color: rgba(100, 0, 0, 0.9); }
+        }
+        .alarm-btn {
+            background: white; color: red; border: none; padding: 15px 30px;
+            font-size: 18px; font-weight: bold; border-radius: 10px; margin-top: 20px;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="giris-ekrani">
+        <div id="giris-kutusu">
+            <h2>🛡️ Güvenli Rota</h2>
+            <p>Güvenli bir dünya için birlikte</p>
+            <div id="giris-sekme">
+                <button class="sekme-btn aktif" onclick="sekmeGoster('giris')">Giriş Yap</button>
+                <button class="sekme-btn" onclick="sekmeGoster('kayit')">Kayıt Ol</button>
+            </div>
+            <div id="form-giris">
+                <input class="giris-input" type="email" id="giris-email" placeholder="E-posta adresi" />
+                <input class="giris-input" type="password" id="giris-sifre" placeholder="Şifre" />
+                <div id="giris-hata"></div>
+                <button class="giris-btn" id="btn-giris" onclick="girisYap()">Giriş Yap</button>
+                <p style="margin-top:10px; font-size:13px;">
+                    <a href="#" onclick="sifreSifirla()" style="color:#0f3460;">Şifremi unuttum</a>
+                </p>
+            </div>
+            <div id="form-kayit" style="display:none;">
+                <input class="giris-input" type="text" id="kayit-ad" placeholder="Adınız (haritada görünecek)" />
+                <input class="giris-input" type="email" id="kayit-email" placeholder="E-posta adresi" />
+                <input class="giris-input" type="password" id="kayit-sifre" placeholder="Şifre (min 6 karakter)" />
+                <div id="kayit-hata" style="font-size:13px; margin:5px 0; min-height:18px; color:red;"></div>
+                <button class="giris-btn" id="btn-kayit" onclick="kayitOl()">Kayıt Ol</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="dogrulama-ekrani">
+        <div id="dogrulama-kutusu">
+            <h2>📧 E-postanı Doğrula</h2>
+            <p>Kayıt olduğun e-posta adresine bir doğrulama linki gönderdik.<br><br>
+            Lütfen e-postanı kontrol et ve linke tıkla. Ardından aşağıdaki butona bas.</p>
+            <br>
+            <button class="giris-btn" style="background:#0f3460; color:white;" onclick="dogrulamayiKontrolEt()">✅ Doğruladım, Giriş Yap</button>
+            <button class="giris-btn" style="background:#6c757d; color:white;" onclick="tekrarGonder()">📨 Tekrar Gönder</button>
+            <button class="giris-btn" style="background:#dc3545; color:white;" onclick="cikisYapDogrulama()">Çıkış Yap</button>
+            <div id="dogrulama-mesaj" style="font-size:13px; margin-top:10px; min-height:18px;"></div>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    <div id="guven-puani-rozet">🛡️ Güven Puanı: <span id="puan-degeri">50</span></div>
+    <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
+    <button id="risk-buton">⚠️ Risk Bildir</button>
+    <button id="acil-buton">🚨 ACİL DURUM</button>
+
+    <div id="acil-alarm-ekrani">
+        <h1 style="font-size: 35px; margin: 0;">🚨 ACİL DURUM ALARMI 🚨</h1>
+        <p id="alarm-mesaj-metni" style="font-size: 20px; margin: 20px 0; font-weight: bold;"></p>
+        <button class="alarm-btn" id="takip-baslat-btn">📍 Canlı Takip Et</button>
+        <button class="alarm-btn" style="background:#ccc; color:#333; margin-left:10px;" onclick="alarmKapat()">Yoksay</button>
+    </div>
+
+    <div id="risk-menusu">
+        <h3>Tehlike Türünü Seçin</h3>
+        <button class="risk-secenek" onclick="riskEkle('Karanlık Sokak')">Karanlık Sokak</button>
+        <button class="risk-secenek" onclick="riskEkle('Tenha Alan')">Tenha Alan</button>
+        <button class="risk-secenek" onclick="riskEkle('Bozuk Aydınlatma')">Bozuk Aydınlatma</button>
+        <button class="risk-secenek" onclick="riskEkle('Şüpheli Kişi')">Şüpheli Kişi</button>
+        <button class="risk-secenek" id="menu-kapat" onclick="menuyuKapat()">İptal</button>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_wUAtMrhNZNYqiHq7d7_6BvqnUXDh1cY",
+            authDomain: "gvenli-rota.firebaseapp.com",
+            projectId: "gvenli-rota",
+            storageBucket: "gvenli-rota.firebasestorage.app",
+            messagingSenderId: "290399908602",
+            appId: "1:290399908602:web:a64ed19148db6832f00f43"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let kullaniciAdi = "";
+        let harita;
+        let riskKatmani;
+        let canliTakipIkonlari = {};
+        let guncelEnlem = 0;
+        let guncelBoylam = 0;
+        let acilTelemetriInterval = null;
+        let acilDokumanId = null;
+        let guvenPuani = 50;
+
+        function sekmeGoster(sekme) {
+            document.getElementById('form-giris').style.display = sekme === 'giris' ? 'block' : 'none';
+            document.getElementById('form-kayit').style.display = sekme === 'kayit' ? 'block' : 'none';
+            document.querySelectorAll('.sekme-btn').forEach((btn, i) => {
+                btn.classList.toggle('aktif', (sekme === 'giris' && i === 0) || (sekme === 'kayit' && i === 1));
+            });
+            document.getElementById('giris-hata').innerText = '';
+        }
+
+        function kayitOl() {
+            let ad = document.getElementById('kayit-ad').value.trim();
+            let email = document.getElementById('kayit-email').value.trim();
+            let sifre = document.getElementById('kayit-sifre').value;
+            let hataEl = document.getElementById('kayit-hata');
+
+            if (!ad) { hataEl.innerText = 'Lütfen adınızı girin.'; return; }
+            if (!email) { hataEl.innerText = 'Lütfen e-posta girin.'; return; }
+            if (sifre.length < 6) { hataEl.innerText = 'Şifre en az 6 karakter olmalı.'; return; }
+
+            auth.createUserWithEmailAndPassword(email, sifre)
+                .then((userCredential) => {
+                    return userCredential.user.updateProfile({ displayName: ad })
+                        .then(() => userCredential.user.sendEmailVerification());
+                })
+                .then(() => {
+                    document.getElementById('giris-ekrani').style.display = 'none';
+                    document.getElementById('dogrulama-ekrani').style.display = 'flex';
+                })
+                .catch((error) => { hataEl.innerText = hataYazisi(error.code); });
+        }
+
+        function girisYap() {
+            let email = document.getElementById('giris-email').value.trim();
+            let sifre = document.getElementById('giris-sifre').value;
+            if (!email || !sifre) { hataGoster('E-posta ve şifre gerekli.'); return; }
+            auth.signInWithEmailAndPassword(email, sifre)
+                .then((userCredential) => {
+                    if (!userCredential.user.emailVerified) {
+                        document.getElementById('giris-ekrani').style.display = 'none';
+                        document.getElementById('dogrulama-ekrani').style.display = 'flex';
+                    }
+                })
+                .catch((error) => { hataGoster(hataYazisi(error.code)); });
+        }
+
+        function dogrulamayiKontrolEt() {
+            auth.currentUser.reload().then(() => {
+                if (auth.currentUser.emailVerified) {
+                    document.getElementById('dogrulama-ekrani').style.display = 'none';
+                    uygulamayiBaslat(auth.currentUser);
+                } else {
+                    let el = document.getElementById('dogrulama-mesaj');
+                    el.style.color = 'red';
+                    el.innerText = 'E-posta henüz doğrulanmamış. Lütfen gelen kutunu kontrol et.';
+                }
+            });
+        }
+
+        function tekrarGonder() {
+            auth.currentUser.sendEmailVerification().then(() => {
+                let el = document.getElementById('dogrulama-mesaj');
+                el.style.color = 'green';
+                el.innerText = '✅ Doğrulama e-postası tekrar gönderildi!';
+            });
+        }
+
+        function cikisYapDogrulama() {
+            auth.signOut().then(() => { location.reload(); });
+        }
+
+        function sifreSifirla() {
+            let email = document.getElementById('giris-email').value.trim();
+            if (!email) { hataGoster('Lütfen önce e-posta adresinizi girin.'); return; }
+            auth.sendPasswordResetEmail(email)
+                .then(() => { hataGoster('✅ Şifre sıfırlama e-postası gönderildi!', 'green'); })
+                .catch((error) => { hataGoster(hataYazisi(error.code)); });
+        }
+
+        function hataGoster(mesaj, renk = 'red') {
+            let el = document.getElementById('giris-hata');
+            el.style.color = renk;
+            el.innerText = mesaj;
+        }
+
+        function hataYazisi(kod) {
+            const hatalar = {
+                'auth/email-already-in-use': 'Bu e-posta zaten kayıtlı.',
+                'auth/invalid-email': 'Geçersiz e-posta adresi.',
+                'auth/weak-password': 'Şifre çok zayıf.',
+                'auth/user-not-found': 'Bu e-posta ile kayıtlı kullanıcı yok.',
+                'auth/wrong-password': 'Hatalı şifre.',
+                'auth/invalid-credential': 'E-posta veya şifre hatalı.',
+                'auth/too-many-requests': 'Çok fazla deneme. Lütfen bekleyin.'
+            };
+            return hatalar[kod] || 'Bir hata oluştu. Tekrar deneyin.';
+        }
+
+        auth.onAuthStateChanged((kullanici) => {
+            if (kullanici && kullanici.emailVerified) {
+                uygulamayiBaslat(kullanici);
+            } else if (kullanici && !kullanici.emailVerified) {
+                document.getElementById('giris-ekrani').style.display = 'none';
+                document.getElementById('dogrulama-ekrani').style.display = 'flex';
+            } else {
+                document.getElementById('giris-ekrani').style.display = 'flex';
+                document.getElementById('dogrulama-ekrani').style.display = 'none';
+            }
+        });
+
+        function uygulamayiBaslat(kullanici) {
+            kullaniciAdi = kullanici.displayName || kullanici.email;
+            localStorage.setItem('kullanici_adi', kullaniciAdi);
+            try { AndroidBridge.kullaniciAdiniKaydet(kullaniciAdi); } catch(e) {}
+            document.getElementById('giris-ekrani').style.display = 'none';
+            document.getElementById('dogrulama-ekrani').style.display = 'none';
+            guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
+            document.getElementById('puan-degeri').innerText = guvenPuani;
+            if (!harita) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
+                }
+            }
+        }
+
+        let kirmiziIkon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+        let canliMaviIkon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
+        });
+
+        function konumGuncelle(position) {
+            guncelEnlem = position.coords.latitude;
+            guncelBoylam = position.coords.longitude;
+            if (!harita) {
+                harita = L.map('map').setView([guncelEnlem, guncelBoylam], 16);
+                // NORMAL HARİTA KATMANI
+                let normalHarita = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19, attribution: '© OpenStreetMap'
+                });
+
+                // UYDU GÖRÜNTÜSÜ KATMANI (ÜCRETSİZ)
+                let uyduHarita = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    maxZoom: 19, attribution: '© Esri'
+                });
+
+                // Varsayılan normal harita
+                normalHarita.addTo(harita);
+
+                // Sol altta katman değiştirme butonu
+                L.control.layers(
+                    { "🗺️ Normal": normalHarita, "🛰️ Uydu": uyduHarita },
+                    {},
+                    { position: 'bottomleft' }
+                ).addTo(harita);
+
+                L.marker([guncelEnlem, guncelBoylam]).addTo(harita)
+                    .bindPopup("Şu an buradasınız (" + kullaniciAdi + ")");
+                riskKatmani = L.layerGroup().addTo(harita);
+                kayitliRiskleriYukle();
+                canliAcilDurumDinleyicisi();
+            }
+        }
+
+        function konumHatasi(error) { console.log("Konum hatası."); }
+
+        function ayarlariAc() {
+            let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap\n\nYapmak istediğiniz işlemin numarasını yazın:");
+            if (secim == "1") {
+                let mevcutNo = localStorage.getItem('acilDurumNumarasi')
+                    ? localStorage.getItem('acilDurumNumarasi').substring(2) : "";
+                let yeniNo = prompt("Yeni acil durum numarasını başında '0' OLMADAN girin:", mevcutNo);
+                if (yeniNo && yeniNo.length >= 10) {
+                    let formatliNo = "90" + yeniNo.replace(/\D/g, '').slice(-10);
+                    localStorage.setItem('acilDurumNumarasi', formatliNo);
+                    alert("Acil durum numarası güncellendi!");
+                }
+            } else if (secim == "2") {
+                auth.signOut().then(() => { location.reload(); });
+            }
+        }
+
+        document.getElementById('risk-buton').addEventListener('click', function () {
+            document.getElementById('risk-menusu').style.display = 'block';
+        });
+
+        function menuyuKapat() { document.getElementById('risk-menusu').style.display = 'none'; }
+
+        function riskEkle(riskTuru) {
+            let simdi = new Date().getTime();
+            const ENGEL_SURESI = 60 * 60 * 1000;
+            let bildirimZamanlari = JSON.parse(localStorage.getItem('risk_zaman_kayitlari')) || [];
+            bildirimZamanlari = bildirimZamanlari.filter(zaman => (simdi - zaman) < ENGEL_SURESI);
+            if (bildirimZamanlari.length >= 2) {
+                alert("Güvenlik nedeniyle son 1 saat içinde en fazla 2 farklı risk bildirebilirsiniz!");
+                puanGuncelle(-2); menuyuKapat(); return;
+            }
+            if (guncelEnlem !== 0 && guncelBoylam !== 0) {
+                db.collection("riskler").add({
+                    enlem: guncelEnlem, boylam: guncelBoylam, tur: riskTuru,
+                    dogrulama: 0, tarih: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    bildirimZamanlari.push(simdi);
+                    localStorage.setItem('risk_zaman_kayitlari', JSON.stringify(bildirimZamanlari));
+                    puanGuncelle(5); menuyuKapat();
+                    alert("Risk başarıyla ortak haritaya eklendi!");
+                });
+            }
+        }
+
+        function kayitliRiskleriYukle() {
+            db.collection("riskler").onSnapshot((snapshot) => {
+                riskKatmani.clearLayers();
+                let simdi = new Date().getTime();
+                const YIRMI_DORT_SAAT = 24 * 60 * 60 * 1000;
+                snapshot.forEach((doc) => {
+                    let risk = doc.data(); let rId = doc.id;
+                    let dogrulamaSayisi = risk.dogrulama || 0;
+                    let riskZamani = risk.tarih ? risk.tarih.toDate().getTime() : simdi;
+                    if (dogrulamaSayisi < 0) { db.collection("riskler").doc(rId).delete(); return; }
+                    if ((simdi - riskZamani) > YIRMI_DORT_SAAT && dogrulamaSayisi < 10) {
+                        db.collection("riskler").doc(rId).delete(); return;
+                    }
+                    let popupIcerigi = `
+                        <div style="text-align:center; min-width: 150px;">
+                            <b>Risk:</b> ${risk.tur}<br>
+                            <small>Güven Derecesi: <b>${dogrulamaSayisi}</b></small><br>
+                            <button class="dogrula-btn" onclick="riskDogrula('${rId}')">✅ Bu risk hala var</button>
+                            <button class="dogrula-btn" style="background:#dc3545;" onclick="tehlikeYokBildir('${rId}')">❌ Tehlike geçti</button>
+                        </div>`;
+                    L.marker([risk.enlem, risk.boylam], { icon: kirmiziIkon }).addTo(riskKatmani).bindPopup(popupIcerigi);
+                });
+            });
+        }
+
+        function riskDogrula(rId) {
+            if (localStorage.getItem('onaylandi_' + rId)) { alert("Bu riski zaten onayladınız!"); return; }
+            db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(1) })
+                .then(() => { localStorage.setItem('onaylandi_' + rId, 'true'); puanGuncelle(2); });
+        }
+
+        function tehlikeYokBildir(rId) {
+            if (localStorage.getItem('tehlike_yok_' + rId)) { alert("Zaten bildirim yaptınız!"); return; }
+            db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(-1) })
+                .then(() => { localStorage.setItem('tehlike_yok_' + rId, 'true'); puanGuncelle(1); });
+        }
+
+        function puanGuncelle(deger) {
+            guvenPuani += deger;
+            localStorage.setItem('guvenPuani', guvenPuani);
+            document.getElementById('puan-degeri').innerText = guvenPuani;
+        }
+
+        document.getElementById('acil-buton').addEventListener('click', function () {
+            let buton = document.getElementById('acil-buton');
+            if (acilTelemetriInterval) {
+                clearInterval(acilTelemetriInterval);
+                acilTelemetriInterval = null;
+                if (acilDokumanId) {
+                    db.collection("acil_durumlar").doc(acilDokumanId).update({ aktif: false })
+                        .then(() => { db.collection("acil_durumlar").doc(acilDokumanId).delete(); });
+                    acilDokumanId = null;
+                }
+                buton.style.backgroundColor = "#ff0033";
+                buton.innerText = "🚨 ACİL DURUM";
+                alert("Acil durum yayını kapatıldı. Güvendesiniz.");
+                return;
+            }
+            if (guncelEnlem !== 0 && guncelBoylam !== 0) {
+                let acilNumara = localStorage.getItem('acilDurumNumarasi');
+                if (!acilNumara) {
+                    let girilenNumara = prompt("🚨 Acil Durum Kişisi 🚨\n\nKonumun iletileceği numarayı başında '0' olmadan yazın:");
+                    if (girilenNumara && girilenNumara.length >= 10) {
+                        acilNumara = "90" + girilenNumara.replace(/\D/g, '').slice(-10);
+                        localStorage.setItem('acilDurumNumarasi', acilNumara);
+                    } else { alert("İptal edildi."); return; }
+                }
+                buton.style.backgroundColor = "#000";
+                buton.innerText = "🛑 YAYINI KAPAT";
+                db.collection("acil_durumlar").add({
+                    isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
+                    aktif: true, tarih: firebase.firestore.FieldValue.serverTimestamp()
+                }).then((docRef) => {
+                    acilDokumanId = docRef.id;
+                    acilTelemetriInterval = setInterval(() => {
+                        navigator.geolocation.getCurrentPosition((pos) => {
+                            guncelEnlem = pos.coords.latitude;
+                            guncelBoylam = pos.coords.longitude;
+                            db.collection("acil_durumlar").doc(docRef.id).update({
+                                enlem: guncelEnlem, boylam: guncelBoylam,
+                                tarih: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }, null, { enableHighAccuracy: true });
+                    }, 4000);
+                    let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
+                    let googleMapsLinki = "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam;
+                    let whatsappUrl = "https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + googleMapsLinki);
+                    alert("🚨 ACİL DURUM YAYINI BAŞLADI!\nWhatsApp'a yönlendiriliyorsunuz.");
+                    window.open(whatsappUrl, '_blank');
+                });
+            } else { alert("Konum bekleniyor, tekrar deneyin."); }
+        });
+
+        let dahaOnceUyarilanlar = {};
+        let acilDurumSireni = new Audio('https://actions.google.com/sounds/v1/alarms/analog_watch_alarm.ogg');
+        acilDurumSireni.loop = true;
+
+        function canliAcilDurumDinleyicisi() {
+            db.collection("acil_durumlar").where("aktif", "==", true).onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    let acilData = change.doc.data();
+                    let aId = change.doc.id;
+                    if (change.type === "added" && acilData.isim !== kullaniciAdi && acilData.aktif === true) {
+                        let tarih = acilData.tarih ? acilData.tarih.toDate().getTime() : 0;
+                        let saniyeFarki = (Date.now() - tarih) / 1000;
+                        if (saniyeFarki > 30) return;
+                        if (!dahaOnceUyarilanlar[aId]) {
+                            dahaOnceUyarilanlar[aId] = true;
+                            document.getElementById('alarm-mesaj-metni').innerText =
+                                "DİKKAT: " + acilData.isim.toUpperCase() + " acil durum çağrısı yaptı!";
+                            document.getElementById('acil-alarm-ekrani').style.display = "flex";
+                            acilDurumSireni.play().catch(e => console.log("Siren hatası:", e));
+                        }
+                        if (canliTakipIkonlari[aId]) {
+                            canliTakipIkonlari[aId].setLatLng([acilData.enlem, acilData.boylam]);
+                        } else {
+                            canliTakipIkonlari[aId] = L.marker([acilData.enlem, acilData.boylam], { icon: canliMaviIkon })
+                                .addTo(harita).bindPopup("⚠️ <b>" + acilData.isim + " (CANLI TAKİP)</b>").openPopup();
+                        }
+                        document.getElementById('takip-baslat-btn').onclick = function () {
+                            harita.setView([acilData.enlem, acilData.boylam], 18);
+                            canliTakipIkonlari[aId].openPopup();
+                            document.getElementById('acil-alarm-ekrani').style.display = "none";
+                        };
+                    }
+                    if (change.type === "modified" && acilData.isim !== kullaniciAdi) {
+                        if (canliTakipIkonlari[aId]) {
+                            canliTakipIkonlari[aId].setLatLng([acilData.enlem, acilData.boylam]);
+                        }
+                    }
+                    if (change.type === "removed") {
+                        if (canliTakipIkonlari[aId]) {
+                            harita.removeLayer(canliTakipIkonlari[aId]);
+                            delete canliTakipIkonlari[aId];
+                            delete dahaOnceUyarilanlar[aId];
+                            alert("Tehlike durumu sona erdi. Kişi güvende.");
+                            alarmKapat();
+                        }
+                    }
+                });
+            });
+        }
+
+        function alarmKapat() {
+            document.getElementById('acil-alarm-ekrani').style.display = "none";
+            acilDurumSireni.pause();
+            acilDurumSireni.currentTime = 0;
+        }
+    </script>
+</body>
+</html>
