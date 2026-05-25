@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gizlilik Politikası – Güvenli Rota</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            --navy: #0f3460;
+            --teal: #1a6b5e;
+            --accent: #00c9a7;
+            --red: #ff0033;
+            --bg: #f7f9fc;
+            --white: #ffffff;
+            --text: #1a1a2e;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f3460, #1a6b5e);
+            color: white;
+            padding: 60px 20px 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header::before {
+            content: '🛡️';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.05;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        header h1 {
+            font-size: clamp(24px, 5vw, 38px);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        header p {
+            font-size: 14px;
+            opacity: 0.75;
+            font-weight: 300;
+        }
+
+        .lang-switch {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .lang-btn {
+            padding: 8px 24px;
+            border-radius: 50px;
+            border: 2px solid var(--navy);
+            background: transparent;
+            color: var(--navy);
+            font-family: 'Sora', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: var(--navy);
+            color: white;
+        }
+
+        .container {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .lang-content { display: none; }
+        .lang-content.active { display: block; }
+
+        .update-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: var(--teal);
+            border: 1px solid #a7f3d0;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        section {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        section h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        section h2 .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--navy), var(--teal));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        p { color: #374151; font-size: 14.5px; margin-bottom: 12px; }
+        p:last-child { margin-bottom: 0; }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        ul li {
+            padding: 8px 0 8px 24px;
+            position: relative;
+            font-size: 14.5px;
+            color: #374151;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        ul li:last-child { border-bottom: none; }
+        ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff, #ecfdf5);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--navy);
+            font-weight: 500;
+        }
+
+        .contact-box {
+            background: linear-gradient(135deg, var(--navy), var(--teal));
+            color: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-top: 32px;
+        }
+        .contact-box h3 { font-size: 18px; margin-bottom: 8px; }
+        .contact-box p { color: rgba(255,255,255,0.8); font-size: 14px; }
+        .contact-box a {
+            display: inline-block;
+            margin-top: 16px;
+            background: white;
+            color: var(--navy);
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 12px;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🛡️ Güvenli Rota</h1>
+    <p>Privacy Policy / Gizlilik Politikası</p>
+</header>
+
+<div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 Türkçe</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+</div>
+
+<div class="container">
+
+    <!-- TÜRKÇE -->
+    <div class="lang-content active" id="lang-tr">
+
+        <div class="update-badge">✅ Son güncelleme: Mayıs 2026</div>
+
+        <section>
+            <h2><span class="icon">📋</span> Genel Bilgi</h2>
+            <p>Güvenli Rota uygulaması ("uygulama"), kullanıcıların güvenli seyahat etmesine yardımcı olmak amacıyla geliştirilmiştir. Bu gizlilik politikası, uygulamayı kullandığınızda hangi verilerin toplandığını, nasıl kullanıldığını ve korunduğunu açıklamaktadır.</p>
+            <div class="highlight-box">
+                Bu uygulama üçüncü taraflara veri satmaz ve kişisel verileriniz reklam amacıyla kullanılmaz.
+            </div>
+        </section>
+
+        <section>
+            <h2><span class="icon">📍</span> Toplanan Veriler</h2>
+            <ul>
+                <li><strong>Konum Verisi:</strong> Harita üzerinde konumunuzu göstermek, risk noktalarını görüntülemek ve acil durum paylaşımı için kullanılır. Konum verisi yalnızca uygulama açıkken veya acil durum aktifken işlenir.</li>
+                <li><strong>E-posta Adresi:</strong> Hesap oluşturma ve kimlik doğrulama için Firebase Authentication aracılığıyla toplanır.</li>
+                <li><strong>Kullanıcı Adı (Görünen Ad):</strong> Harita üzerinde kimliğinizi temsil etmek için kullanılır.</li>
+                <li><strong>Risk Bildirimleri:</strong> Kullanıcıların bildirdiği konum tabanlı risk bilgileri Firebase Firestore'da saklanır.</li>
+                <li><strong>Acil Durum Verisi:</strong> Acil durum butonu kullanıldığında anlık konum bilgisi Firebase'e iletilir ve yakınlarınızla WhatsApp üzerinden paylaşılır.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔒</span> Verilerin Kullanımı</h2>
+            <p>Toplanan veriler yalnızca şu amaçlarla kullanılmaktadır:</p>
+            <ul>
+                <li>Uygulamanın temel güvenlik özelliklerini sağlamak</li>
+                <li>Harita üzerinde risk noktalarını göstermek</li>
+                <li>Acil durum anında konum paylaşımını sağlamak</li>
+                <li>Kullanıcı hesabını yönetmek</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🌐</span> Üçüncü Taraf Hizmetler</h2>
+            <p>Uygulama aşağıdaki üçüncü taraf hizmetleri kullanmaktadır:</p>
+            <ul>
+                <li><strong>Firebase (Google):</strong> Kimlik doğrulama, veritabanı ve bildirim hizmetleri için. Firebase Gizlilik Politikası: policies.google.com/privacy</li>
+                <li><strong>OpenStreetMap / Esri:</strong> Harita görüntüleme için. Kişisel veri işlenmez.</li>
+                <li><strong>WhatsApp:</strong> Acil durum mesajı göndermek için. Uygulama WhatsApp'a yalnızca yönlendirme yapar, veri aktarımı gerçekleştirmez.</li>
+                <li><strong>Leaflet.js:</strong> Açık kaynaklı harita kütüphanesi. Veri toplamaz.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🛡️</span> Veri Güvenliği</h2>
+            <p>Tüm veriler Firebase'in güvenli altyapısında şifreli olarak saklanmaktadır. Uygulama HTTPS üzerinden çalışmaktadır. Verilerinize yalnızca siz ve gerektiğinde yetkili sistem yöneticileri erişebilir.</p>
+        </section>
+
+        <section>
+            <h2><span class="icon">👤</span> Kullanıcı Hakları</h2>
+            <ul>
+                <li>Hesabınızı ve verilerinizi istediğiniz zaman silebilirsiniz</li>
+                <li>Konum iznini istediğiniz zaman cihaz ayarlarından iptal edebilirsiniz</li>
+                <li>Verilerinize erişim veya silme talebinde bulunabilirsiniz</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">👶</span> Çocukların Gizliliği</h2>
+            <p>Güvenli Rota, 13 yaşın altındaki çocuklara yönelik değildir. 13 yaşın altındaki kullanıcılardan bilerek veri toplanmamaktadır. Böyle bir durumun farkına varırsak ilgili veriler derhal silinecektir.</p>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔄</span> Politika Güncellemeleri</h2>
+            <p>Bu gizlilik politikası zaman zaman güncellenebilir. Önemli değişiklikler uygulama üzerinden bildirilecektir. Güncel politika her zaman bu sayfada yayınlanacaktır.</p>
+        </section>
+
+        <div class="contact-box">
+            <h3>📬 İletişim</h3>
+            <p>Gizlilik ile ilgili sorularınız için bizimle iletişime geçebilirsiniz.</p>
+            <a href="mailto:horizonerme@gmail.com">horizonerme@gmail.com</a>
+        </div>
+
+    </div>
+
+    <!-- ENGLISH -->
+    <div class="lang-content" id="lang-en">
+
+        <div class="update-badge">✅ Last updated: May 2026</div>
+
+        <section>
+            <h2><span class="icon">📋</span> Overview</h2>
+            <p>The Güvenli Rota ("Safe Route") application is designed to help users travel safely. This privacy policy explains what data is collected when you use the app, how it is used, and how it is protected.</p>
+            <div class="highlight-box">
+                This app does not sell data to third parties and your personal data is not used for advertising purposes.
+            </div>
+        </section>
+
+        <section>
+            <h2><span class="icon">📍</span> Data We Collect</h2>
+            <ul>
+                <li><strong>Location Data:</strong> Used to display your position on the map, show risk points, and share your location during emergencies. Location is only processed while the app is open or an emergency is active.</li>
+                <li><strong>Email Address:</strong> Collected via Firebase Authentication for account creation and identity verification.</li>
+                <li><strong>Display Name:</strong> Used to represent your identity on the map.</li>
+                <li><strong>Risk Reports:</strong> Location-based risk information reported by users is stored in Firebase Firestore.</li>
+                <li><strong>Emergency Data:</strong> When the emergency button is activated, your real-time location is sent to Firebase and shared with your contacts via WhatsApp.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔒</span> How We Use Data</h2>
+            <p>Collected data is used solely for the following purposes:</p>
+            <ul>
+                <li>Providing the app's core safety features</li>
+                <li>Displaying risk points on the map</li>
+                <li>Enabling location sharing during emergencies</li>
+                <li>Managing user accounts</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🌐</span> Third-Party Services</h2>
+            <ul>
+                <li><strong>Firebase (Google):</strong> Used for authentication, database, and notification services. Firebase Privacy Policy: policies.google.com/privacy</li>
+                <li><strong>OpenStreetMap / Esri:</strong> Used for map rendering. No personal data is processed.</li>
+                <li><strong>WhatsApp:</strong> Used to send emergency messages. The app only redirects to WhatsApp — no data transfer occurs.</li>
+                <li><strong>Leaflet.js:</strong> Open-source map library. Does not collect any data.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🛡️</span> Data Security</h2>
+            <p>All data is stored encrypted within Firebase's secure infrastructure. The app operates over HTTPS. Only you and authorized system administrators can access your data when necessary.</p>
+        </section>
+
+        <section>
+            <h2><span class="icon">👤</span> Your Rights</h2>
+            <ul>
+                <li>You can delete your account and data at any time</li>
+                <li>You can revoke location permission at any time from device settings</li>
+                <li>You can request access to or deletion of your data</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">👶</span> Children's Privacy</h2>
+            <p>Güvenli Rota is not directed at children under the age of 13. We do not knowingly collect data from users under 13. If we become aware of such a situation, the relevant data will be deleted immediately.</p>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔄</span> Policy Updates</h2>
+            <p>This privacy policy may be updated from time to time. Significant changes will be communicated through the app. The current policy will always be published on this page.</p>
+        </section>
+
+        <div class="contact-box">
+            <h3>📬 Contact</h3>
+            <p>If you have any questions about privacy, please contact us.</p>
+            <a href="mailto:horizonerme@gmail.com">horizonerme@gmail.com</a>
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Güvenli Rota · Tüm hakları saklıdır / All rights reserved
+</footer>
+
+<script>
+    function setLang(lang) {
+        document.querySelectorAll('.lang-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.lang-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('lang-' + lang).classList.add('active');
+        event.target.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
