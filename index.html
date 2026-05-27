@@ -89,6 +89,15 @@
             font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
             z-index: 999; cursor: pointer;
         }
+        #kahve-buton {
+            display: none;
+            position: fixed; top: 108px; left: 20px;
+            background: linear-gradient(135deg, #c8793a, #e8a45a);
+            color: white; border: none; padding: 7px 13px; font-size: 12px;
+            font-weight: bold; border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(200,121,58,0.4);
+            z-index: 999; cursor: pointer; white-space: nowrap;
+        }
 
 
 
@@ -168,6 +177,7 @@
     <div id="map"></div>
     <div id="guven-puani-rozet">🛡️ Güven Puanı: <span id="puan-degeri">50</span></div>
     <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
+    <button id="kahve-buton" onclick="kahveAc()">☕ Bize Destek Ol</button>
     <button id="risk-buton">⚠️ Risk Bildir</button>
     <button id="acil-buton">🚨 ACİL DURUM</button>
 
@@ -214,6 +224,20 @@
 
 
 
+
+        function kahveAc() {
+            var intentUrl = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
+            window.location.href = intentUrl;
+        }
+
+        function premiumKontrolEt(uid) {
+            db.collection('kullanicilar').doc(uid).get().then((doc) => {
+                let premium = doc.exists && doc.data().premium === true;
+                document.getElementById('kahve-buton').style.display = premium ? 'none' : 'block';
+            }).catch(() => {
+                document.getElementById('kahve-buton').style.display = 'block';
+            });
+        }
 
         function sekmeGoster(sekme) {
             document.getElementById('form-giris').style.display = sekme === 'giris' ? 'block' : 'none';
@@ -332,6 +356,7 @@
             document.getElementById('dogrulama-ekrani').style.display = 'none';
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
             document.getElementById('puan-degeri').innerText = guvenPuani;
+            premiumKontrolEt(kullanici.uid);
 
 
             if (!harita) {
