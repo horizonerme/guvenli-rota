@@ -1,391 +1,3 @@
-
-Claude finished the response
-1779720459467_image.png
-böylece attım buradan devam edelim
-
-25 May
-
-Examined GitHub deposunu incelemek için hazırlandı
-Examined GitHub deposunu incelemek için hazırlandı
-Güzel, repo'yu görüyorum! horizonerme/guvenli-rota — içindeki dosyalara bakayım.
-
-
-Searched the web
-Searched the web
-Repo içeriğini arama üzerinden bulamadım. Daha önce ne üzerinde çalışıyordunuz? Bana bağlamı hatırlatır mısın — guvenli-rota projesi ne yapıyor, index.html ve privacy.html dosyaları için ne yapmamı istiyorsunuz?
-
-Örneğin:
-
-Dosyaların içeriğini görüp düzenlemek mi?
-Yeni özellik eklemek mi?
-Tasarımı güncellemek mi?
-netfift da butonlar çalışmıyor konusuna buradan devam ediyoruz
-
-25 May
-
-Lokalize etti: JavaScript hata kaynağı ve çözüm stratejisi
-Lokalize etti: JavaScript hata kaynağı ve çözüm stratejisi
-Buldum! Netlify'da butonlar çalışmıyor konuşmasından devam ediyoruz.
-
-Sorunun özeti: index.html içinde let normalHarita ve let uyduHarita değişkenleri iki kez tanımlanmış, bu yüzden JavaScript tamamen kırılıyor ve giriş/kayıt/şifremi unuttum butonları çalışmıyor.
-
-Şu an guvenli-rota reposundaki güncel index.html dosyasını buraya yükler misin? GitHub'dan indirip buraya bırak, düzeltilmiş halini hazırlayayım.
-
-hepsini hallettik şimdi play store da yayınlamak için privacy github a attık
-
-25 May
-
-Hazırlandı, GitHub'dan privacy dosyası alınacak
-Hazırlandı, GitHub'dan privacy dosyası alınacak
-Güzel, Play Store için privacy policy sayfası gerekiyor! GitHub'daki privacy.html dosyasına bakayım.
-
-
-Failed to fetch: https://horizonerme.github.io/guvenli-rota/privacy.html
-Failed to fetch: https://horizonerme.github.io/guvenli-rota/privacy.html
-GitHub Pages URL'ini direkt çekemiyorum. privacy.html dosyasını buraya yapıştırır mısın ya da yükler misin?
-
-Veya şunu söyle — Play Store için ne yapmamı istiyorsun?
-
-📝 privacy.html içeriğini düzenlemek/geliştirmek mi?
-🔗 Play Store'a girerken hangi URL'yi kullanacağını belirlemek mi?
-📋 Eksik bir bölüm var mı, tamamlamak mı?
-https://github.com/horizonerme/guvenli-rota/blob/main/privacy.html
-
-25 May
-
-Thinking about analyzing a privacy policy document from a GitHub repository
-Thinking about analyzing a privacy policy document from a GitHub repository
-Privacy policy sayfasını gördüm — oldukça iyi hazırlanmış! Türkçe/İngilizce dil geçişi var, tüm gerekli bölümler mevcut.
-
-Play Store için bu URL'yi kullanacaksın:
-
-https://horizonerme.github.io/guvenli-rota/privacy.html
-Sayfanın içeriğine bakınca Play Store için gerekli her şey var:
-
-✅ Hangi veriler toplandığı (konum, e-posta, kullanıcı adı)
-✅ Verilerin nasıl kullanıldığı
-✅ Üçüncü taraf hizmetler (Firebase, WhatsApp, OpenStreetMap)
-✅ Kullanıcı hakları (silme, iptal)
-✅ Çocukların gizliliği (13 yaş altı)
-✅ İletişim e-postası
-✅ Son güncelleme tarihi
-
-Şu an ne yapmak istiyorsun?
-
-📝 İçerikte düzenleme/ekleme mi var?
-🚀 Play Store'a nasıl girileceği konusunda yardım mı?
-🔧 Başka bir şey mi?
-shopier heabı onaylanmış
-
-19:23
-
-Deciphered Shopier hesabı onaylanması ve yardım talebini
-Deciphered Shopier hesabı onaylanması ve yardım talebini
-Harika! Shopier hesabı onaylandıysa artık ödeme entegrasyonuna geçebilirsiniz.
-
-Peki şimdi ne yapmak istiyorsunuz?
-
-💳 Shopier ödeme butonunu/linkini uygulamaya entegre etmek mi?
-📦 Uygulama içinde premium üyelik/ödeme sistemi kurmak mı?
-🔗 Play Store'da ödeme sistemi olarak Shopier'i kullanmak mı?
-Ne planladığınızı anlatın, ona göre yardımcı olayım!
-
-uygulamaya entegrayon için android studio kullanacakmıyız
-
-19:24
-
-Değerlendirdi web tabanlı uygulamada entegrasyonun gerekliliğini
-Değerlendirdi web tabanlı uygulamada entegrasyonun gerekliliğini
-Uygulamanın yapısına bağlı! Şu an Güvenli Rota HTML/JS/Firebase tabanlı bir web uygulaması.
-
-Play Store'a koymak için büyük ihtimalle şu iki yoldan birini kullandınız:
-
-1. WebView uygulaması → Android Studio kullandınız, web sayfasını WebView içinde açıyorsunuz 2. TWA (Trusted Web Activity) → Web uygulamasını direkt Chrome tabanlı sarmalıyorsunuz
-
-Shopier entegrasyonu için duruma göre:
-
-Eğer WebView / TWA ise → Shopier entegrasyonunu HTML/JS tarafında yaparsınız, Android Studio'ya gerek yok. Shopier'in ödeme linkini veya iframe'ini web sayfasına eklersiniz.
-
-Eğer tam native Android ise → Android Studio'da WebView içinden Shopier'e yönlendirme yapabilirsiniz.
-
-Şunu söyler misin — Play Store'a atarken nasıl bir yöntem kullandınız? Android Studio'da mı bir proje oluşturdunuz, yoksa başka bir araç mı kullandınız? Ona göre en kolay entegrasyon yolunu göstereyim.
-
-play store a daha atnadık ama android studio yu uygulamayı oluştururken kullandık
-
-19:25
-
-Değerlendirdi Shopier entegrasyonu ve uygulama mimarisini
-Değerlendirdi Shopier entegrasyonu ve uygulama mimarisini
-Tamam, o zaman durum netleşti! Android Studio ile native/WebView uygulama yaptınız.
-
-Shopier entegrasyonu için 2 seçenek var:
-
-Seçenek 1 — WebView ile Shopier (En Kolay) Shopier'in ödeme sayfasını uygulama içinde WebView'da açarsınız. Dışarıya çıkmadan ödeme tamamlanır.
-
-Seçenek 2 — Dışarıya Yönlendirme Shopier ödeme linkini tarayıcıda açarsınız. Daha basit ama kullanıcı uygulamadan çıkar.
-
-Shopier'in native Android SDK'sı yok, bu yüzden her iki yöntem de WebView tabanlı çalışıyor.
-
-Şunu sormam lazım:
-
-Uygulamanız tamamen WebView mi (yani HTML sayfalarını Android içinde gösteriyor)?
-Yoksa native Android (Java/Kotlin ile yazılmış ekranlar) mı?
-Buna göre kod örneğini hazırlayayım! 🚀
-
-apk sını oluşturudk
-
-19:26
-
-Değerlendirdi uygulama yayınlama ve entegrasyon ihtiyaçları
-Değerlendirdi uygulama yayınlama ve entegrasyon ihtiyaçları
-APK hazır, sıra Play Store'a yüklemede!
-
-Şu an hangi adımdasınız?
-
-📤 Play Store'a yükleme → Google Play Console'a APK/AAB yüklemek
-💳 Shopier entegrasyonu → Ödeme sistemini uygulamaya eklemek
-🔧 İkisi birden → Önce Play Store'a atalım, sonra Shopier ekleyelim
-Hangisinden başlayalım?
-
-yani webden de açabiliyoruz telefona kurupta apk dan da açılıyor
-
-19:26
-
-Çözümledi WebView mimarisinin çift platform uyumluluğunu
-Çözümledi WebView mimarisinin çift platform uyumluluğunu
-Anladım! O zaman uygulama WebView tabanlı — Android APK içinde web sayfalarınızı gösteriyor. Bu çok avantajlı!
-
-Shopier entegrasyonu için süper kolay:
-
-Shopier ödeme linkini/butonunu sadece web tarafına (HTML/JS) eklersiniz → hem tarayıcıda hem APK'da otomatik çalışır. Android Studio'ya tekrar dokunmanıza gerek yok!
-
-Shopier entegrasyonu için şunlara ihtiyacım var:
-
-Shopier hesabınızda ödeme linki/butonu oluşturdunuz mu?
-Uygulamada ödeme nerede olacak? Örneğin premium üyelik butonu mu, yoksa başka bir şey mi?
-Bunları söyleyin, HTML kodunu hazırlayayım! 🚀
-
-şöyle buy me a cofie şeklinde ayrıca freeminium özelliklerden bahsetmiştik
-
-19:28
-
-Hatırladı freemium özellikleri ve Shopier bağışı entegrasyonunu
-Hatırladı freemium özellikleri ve Shopier bağışı entegrasyonunu
-Tamam, önceki konuşmayı buldum! Şöyle konuşmuştuk:
-
-Ücretsiz kalacaklar:
-
-Harita görüntüleme
-Risk bildirme
-Acil durum butonu (WhatsApp)
-Temel giriş/kayıt
-Premium özellikler:
-
-Aile takip modu
-Güvenli bölge bildirimleri
-SMS/arama entegrasyonu
-Geçmiş rota kaydı
-Reklamsız kullanım
-Şimdi Shopier ile 2 şey yapacağız:
-
-1. "Bize Kahve Ismarla" butonu → Tek seferlik destek/bağış, Shopier linki ile
-
-2. Premium üyelik → Aylık/yıllık ödeme, Shopier üzerinden
-
-Hangisinden başlayalım? Önce basit olan kahve butonu mu ekleyelim, sonra premium sistemi mi kuralım?
-
-Ayrıca Shopier hesabında ürün/ödeme linki oluşturdun mu? O link lazım olacak.
-
-ürün ödeme linki nasıl oluşturacağım yardımcı olurmusun
-
-19:29
-
-Shopier ödeme linki oluşturma konusunda bilgi aradı
-Shopier ödeme linki oluşturma konusunda bilgi aradı
-Adım adım anlatalım! Güvenli Rota için 2 ürün oluşturacağız:
-
-Shopier'de Ürün/Ödeme Linki Oluşturma:
-
-1. shopier.com'a giriş yap → Hesabına giriş yap
-
-2. Sol menüden "Ürünlerim" → "Yeni Ürün Ekle" ye tıkla
-
-3. İlk ürün — Kahve Desteği:
-
-Ürün adı: Güvenli Rota'ya Destek Ol ☕
-Fiyat: 25₺ (veya istediğin miktar)
-Tür: Dijital ürün seç (kargo gerekmez)
-Açıklama: "Uygulamayı geliştirmemize destek olmak için teşekkürler!"
-Kaydet → ürün linki otomatik oluşur
-4. İkinci ürün — Premium Üyelik:
-
-Ürün adı: Güvenli Rota Premium
-Fiyat: 29₺/ay veya 199₺/yıl
-Tür: Dijital ürün
-Kaydet
-Ürünleri oluşturduktan sonra her birinin shopier.com/horizonerme/urun-adi şeklinde bir linki olacak. O linkleri bana ver, uygulamaya entegre edelim! 🚀
-
-Ürünleri oluşturdun mu, takıldığın bir yer var mı?
-
-stok adeti ne ne yazayım
-
-19:33
-
-Pondered inventory quantity specification for digital products
-Pondered inventory quantity specification for digital products
-Dijital ürün olduğu için stok sınırın yok!
-
-999 veya 9999 yaz — ya da platformun izin verdiği maksimum sayıyı gir. Bazı Shopier hesaplarında dijital ürünlerde "Sınırsız" seçeneği de çıkabiliyor, onu seç.
-
-aylık yıllık olarak nasıl ayıracağız ki
-
-19:39
-Shopier'de otomatik abonelik/tekrarlayan ödeme sistemi yok. Bu yüzden şöyle yapacağız:
-
-2 ayrı ürün oluşturursun:
-
-Ürün 1: Güvenli Rota Premium - Aylık → 29₺
-Ürün 2: Güvenli Rota Premium - Yıllık → 199₺
-Ama asıl soru şu: Ödeme yapan kullanıcıya premium özelliği nasıl açacaksın?
-
-Shopier otomatik olarak Firebase'deki kullanıcıyı premium yapmıyor. Bunun için 2 seçenek var:
-
-Seçenek 1 — Manuel (Şimdilik Kolay) Shopier'den ödeme bildirimi gelince sen manuel olarak Firebase'de o kullanıcıyı premium yaparsın. Kullanıcı sayısı azken işe yarar.
-
-Seçenek 2 — Otomatik (Webhook) Shopier ödeme olunca senin sunucuna bildirim gönderir, Firebase otomatik güncellenir. Biraz teknik ama kalıcı çözüm.
-
-Başlangıç için Seçenek 1 mantıklı. Kullanıcı ödeyince sana e-posta gelir, sen de Firebase'den o kullanıcıya premium: true yazarsın.
-
-Hangisini tercih edersin?
-
-iyide biz satışı play stoer dan yapacaktık ya shopier i sadece bağış yapmak istiyenler için açmadıkmı
-
-19:57
-Haklısın, karıştırdım! Özet şu:
-
-Shopier → Sadece "Kahve Ismarla" tarzı bağış/destek butonu
-
-Play Store → Asıl premium satış buradan olacak (Google Play Billing)
-
-O zaman Shopier'de sadece 1 ürün yeterli:
-
-Ürün adı: Güvenli Rota'ya Destek Ol ☕
-Fiyat: 25₺ veya 50₺
-Tür: Dijital ürün
-Stok: 9999
-Basit ve temiz. Ürünü oluşturduktan sonra linki al, uygulamaya küçük bir "Bize Kahve Ismarla" butonu olarak ekleriz.
-
-Play Store premium sistemi ayrı bir iş — Google Play Billing entegrasyonu gerekiyor, onu da sırayla hallederiz.
-
-Önce Shopier ürününü oluştur, linki al! 🚀
-
-https://www.shopier.com/horizoner/47576302
-
-19:58
-Link hazır! Şimdi uygulamaya ekleyelim.
-
-Bu linki index.html'e "Bize Kahve Ismarla ☕" butonu olarak ekleyeceğiz. Butonun nerede görünmesini istiyorsun?
-
-👤 Profil sayfasında mı?
-⚙️ Ayarlar menüsünde mi?
-🏠 Ana ekranda bir yerde mi?
-📋 Yan menüde mi?
-uygulamanın ekranında ama kullanıcıyı rahatsız etmeyecek bir yerde olsun
-
-19:58
-
-Değerlendirdi en uygun, rahatsız etmeyen buton yerleşim seçeneklerini
-Değerlendirdi en uygun, rahatsız etmeyen buton yerleşim seçeneklerini
-Güvenlik uygulaması olduğu için haritayı ve acil butonu kesinlikle engellememeli. En iyi seçenekler:
-
-Önerim: Ayarlar/Profil sayfasının en altı ✅
-
-Kullanıcı görmek isteyince görür
-Ana ekranı hiç bozmaz
-En profesyonel görünüm
-Diğer seçenekler:
-
-Yan menünün en altı → Hamburger menü açınca görünür, kimseyi rahatsız etmez
-Küçük sabit ikon → Sağ alt köşede çok küçük ☕ ikonu, acil butonun yanında değil
-Uygulamada ayarlar/profil sayfası var mı, yoksa yan menü mü kullanıyorsunuz?
-
-Ona göre kodu hazırlayayım, direkt yapıştırırsın!
-
-ama kullanıcı kaç kere girecekki ayarlara birazda gözünün önünde olsun istiyorum
-
-20:02
-Haklısın! O zaman yan menünün en altı en mantıklısı — menü açıldığında gözüne çarpıyor ama haritayı ve acil butonu hiç engellemiyor.
-
-Şu an index.html'i buraya yükler misin? Yan menünün kodunu göreyim, tam yerine yerleştireyim. 🚀
-
-en alta hiç elleme bence orada kocaman acil durum butonu var
-
-20:03
-Haklısın, acil butona dokunmayalım!
-
-O zaman şöyle düşünelim — yan menü açıldığında menü öğelerinin en altına, acil butonun hemen üstüne küçük bir kahve butonu ekleriz. Zarif, gözde ama acil butonu engellemez.
-
-Şu an index.html'i yükler misin? Menü yapısını göreyim, tam yerine koyayım! 🚀
-
-üste koyalım bence acil durum butonundan uzaklaşşsın
-
-20:03
-Mantıklı! Menü açıldığında en üste kahve butonu, en altta acil durum butonu — ikisi birbirinden uzak, karışıklık yok.
-
-index.html'i yükle, hemen ekleyelim! 🚀
-
-birde uygulamay satın alınca bu buton kaybolsun
-
-20:03
-Akıllıca düşünmüşsün! Premium kullanıcıya bağış butonu göstermek garip kaçar.
-
-Mantık şöyle olacak:
-
-premium: false → kahve butonu görünür
-premium: true → kahve butonu kaybolur
-Firebase'deki kullanıcı verisinden kontrol edeceğiz. index.html'i yükle, hem kahve butonunu hem de premium kontrolünü birlikte ekleyelim! 🚀
-
-
-<!DOCTYPE html> <html lang="tr"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> <title>GüvenliRota AI - Ana Ekran</title> <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/
-
-pasted
-
-20:05
-
-I notice the user prompt is empty, so I cannot determine the primary language. However, based on the thinking block which is in English, here is my summary: Architected premium-gated coffee button integration with Firebase verification
-I notice the user prompt is empty, so I cannot determine the primary language. However, based on the thinking block which is in English, here is my summary: Architected premium-gated coffee button integration with Firebase verification
-Kodu inceledim! Yan menü yok, ayarlar prompt() ile açılıyor. O yüzden kahve butonunu sol üste, ayarlar butonunun hemen altına ekleyeceğim. Küçük, zarif, premium olunca kayboluyor.
-
-
-Ran 2 commands, read a file
-Ran 2 commands, read a file
-Hazır! İşte yapılanlar:
-
-☕ Kahve butonu:
-
-Sol üstte, Ayarlar butonunun hemen altında
-Kahverengi/turuncu renk — göze çarpıyor ama acil butona benzemiyor
-Tıklayınca Shopier sayfana yönlendiriyor
-Premium kontrolü:
-
-Giriş yapınca Firebase'deki kullanicilar/{uid} belgesine bakıyor
-premium: true varsa buton otomatik kayboluyor
-Belge yoksa veya premium: false ise buton görünüyor
-Şimdi bu dosyayı GitHub'a at, Netlify otomatik güncelleyecek! 🚀
-
-
-Index
-Code · HTML 
-
-
-
-
-
-Claude is AI and can make mistakes. Please double-check responses.
-
-
-raw
-Index · HTML
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -398,11 +10,11 @@ Index · HTML
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
- 
+
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; }
         #map { height: 100vh; width: 100vw; z-index: 1; }
- 
+
         #giris-ekrani {
             display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
@@ -436,7 +48,7 @@ Index · HTML
             font-weight: bold; background: #f5f5f5; color: #666;
         }
         .sekme-btn.aktif { background: #0f3460; color: white; }
- 
+
         #dogrulama-ekrani {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
@@ -449,7 +61,7 @@ Index · HTML
         }
         #dogrulama-kutusu h2 { color: #1a1a2e; font-size: 20px; margin-bottom: 10px; }
         #dogrulama-kutusu p { color: #666; font-size: 14px; line-height: 1.5; }
- 
+
         #acil-buton {
             position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background-color: #ff0033; color: white; border: none; padding: 15px 30px;
@@ -477,7 +89,7 @@ Index · HTML
             font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
             z-index: 999; cursor: pointer;
         }
- 
+
         /* ☕ KAHVE BUTONU */
         #kahve-buton {
             display: none;
@@ -494,7 +106,7 @@ Index · HTML
             transform: scale(0.96);
             box-shadow: 0px 2px 6px rgba(200,121,58,0.3);
         }
- 
+
         #risk-menusu {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 20px; border-radius: 15px;
@@ -527,7 +139,7 @@ Index · HTML
     </style>
 </head>
 <body>
- 
+
     <div id="giris-ekrani">
         <div id="giris-kutusu">
             <h2>🛡️ Güvenli Rota</h2>
@@ -554,7 +166,7 @@ Index · HTML
             </div>
         </div>
     </div>
- 
+
     <div id="dogrulama-ekrani">
         <div id="dogrulama-kutusu">
             <h2>📧 E-postanı Doğrula</h2>
@@ -567,21 +179,21 @@ Index · HTML
             <div id="dogrulama-mesaj" style="font-size:13px; margin-top:10px; min-height:18px;"></div>
         </div>
     </div>
- 
+
     <div id="map"></div>
     <div id="guven-puani-rozet">🛡️ Güven Puanı: <span id="puan-degeri">50</span></div>
     <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
     <button id="kahve-buton" onclick="kahveAc()">☕ Bize Destek Ol</button>
     <button id="risk-buton">⚠️ Risk Bildir</button>
     <button id="acil-buton">🚨 ACİL DURUM</button>
- 
+
     <div id="acil-alarm-ekrani">
         <h1 style="font-size: 35px; margin: 0;">🚨 ACİL DURUM ALARMI 🚨</h1>
         <p id="alarm-mesaj-metni" style="font-size: 20px; margin: 20px 0; font-weight: bold;"></p>
         <button class="alarm-btn" id="takip-baslat-btn">📍 Canlı Takip Et</button>
         <button class="alarm-btn" style="background:#ccc; color:#333; margin-left:10px;" onclick="alarmKapat()">Yoksay</button>
     </div>
- 
+
     <div id="risk-menusu">
         <h3>Tehlike Türünü Seçin</h3>
         <button class="risk-secenek" onclick="riskEkle('Karanlık Sokak')">Karanlık Sokak</button>
@@ -590,7 +202,7 @@ Index · HTML
         <button class="risk-secenek" onclick="riskEkle('Şüpheli Kişi')">Şüpheli Kişi</button>
         <button class="risk-secenek" id="menu-kapat" onclick="menuyuKapat()">İptal</button>
     </div>
- 
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyC_wUAtMrhNZNYqiHq7d7_6BvqnUXDh1cY",
@@ -600,11 +212,11 @@ Index · HTML
             messagingSenderId: "290399908602",
             appId: "1:290399908602:web:a64ed19148db6832f00f43"
         };
- 
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
- 
+
         let kullaniciAdi = "";
         let harita;
         let riskKatmani;
@@ -614,12 +226,12 @@ Index · HTML
         let acilTelemetriInterval = null;
         let acilDokumanId = null;
         let guvenPuani = 50;
- 
+
         // ☕ Kahve butonuna tıklanınca Shopier'e yönlendir
         function kahveAc() {
             window.open('https://www.shopier.com/horizoner/47576302', '_blank');
         }
- 
+
         // Premium durumunu kontrol et ve kahve butonunu göster/gizle
         function premiumKontrolEt(uid) {
             db.collection("kullanicilar").doc(uid).get().then((doc) => {
@@ -630,7 +242,7 @@ Index · HTML
                 document.getElementById('kahve-buton').style.display = 'block';
             });
         }
- 
+
         function sekmeGoster(sekme) {
             document.getElementById('form-giris').style.display = sekme === 'giris' ? 'block' : 'none';
             document.getElementById('form-kayit').style.display = sekme === 'kayit' ? 'block' : 'none';
@@ -639,17 +251,17 @@ Index · HTML
             });
             document.getElementById('giris-hata').innerText = '';
         }
- 
+
         function kayitOl() {
             let ad = document.getElementById('kayit-ad').value.trim();
             let email = document.getElementById('kayit-email').value.trim();
             let sifre = document.getElementById('kayit-sifre').value;
             let hataEl = document.getElementById('kayit-hata');
- 
+
             if (!ad) { hataEl.innerText = 'Lütfen adınızı girin.'; return; }
             if (!email) { hataEl.innerText = 'Lütfen e-posta girin.'; return; }
             if (sifre.length < 6) { hataEl.innerText = 'Şifre en az 6 karakter olmalı.'; return; }
- 
+
             auth.createUserWithEmailAndPassword(email, sifre)
                 .then((userCredential) => {
                     return userCredential.user.updateProfile({ displayName: ad })
@@ -661,7 +273,7 @@ Index · HTML
                 })
                 .catch((error) => { hataEl.innerText = hataYazisi(error.code); });
         }
- 
+
         function girisYap() {
             let email = document.getElementById('giris-email').value.trim();
             let sifre = document.getElementById('giris-sifre').value;
@@ -675,7 +287,7 @@ Index · HTML
                 })
                 .catch((error) => { hataGoster(hataYazisi(error.code)); });
         }
- 
+
         function dogrulamayiKontrolEt() {
             auth.currentUser.reload().then(() => {
                 if (auth.currentUser.emailVerified) {
@@ -688,7 +300,7 @@ Index · HTML
                 }
             });
         }
- 
+
         function tekrarGonder() {
             auth.currentUser.sendEmailVerification().then(() => {
                 let el = document.getElementById('dogrulama-mesaj');
@@ -696,11 +308,11 @@ Index · HTML
                 el.innerText = '✅ Doğrulama e-postası tekrar gönderildi!';
             });
         }
- 
+
         function cikisYapDogrulama() {
             auth.signOut().then(() => { location.reload(); });
         }
- 
+
         function sifreSifirla() {
             let email = document.getElementById('giris-email').value.trim();
             if (!email) { hataGoster('Lütfen önce e-posta adresinizi girin.'); return; }
@@ -708,13 +320,13 @@ Index · HTML
                 .then(() => { hataGoster('✅ Şifre sıfırlama e-postası gönderildi!', 'green'); })
                 .catch((error) => { hataGoster(hataYazisi(error.code)); });
         }
- 
+
         function hataGoster(mesaj, renk = 'red') {
             let el = document.getElementById('giris-hata');
             el.style.color = renk;
             el.innerText = mesaj;
         }
- 
+
         function hataYazisi(kod) {
             const hatalar = {
                 'auth/email-already-in-use': 'Bu e-posta zaten kayıtlı.',
@@ -727,7 +339,7 @@ Index · HTML
             };
             return hatalar[kod] || 'Bir hata oluştu. Tekrar deneyin.';
         }
- 
+
         auth.onAuthStateChanged((kullanici) => {
             if (kullanici && kullanici.emailVerified) {
                 uygulamayiBaslat(kullanici);
@@ -739,7 +351,7 @@ Index · HTML
                 document.getElementById('dogrulama-ekrani').style.display = 'none';
             }
         });
- 
+
         function uygulamayiBaslat(kullanici) {
             kullaniciAdi = kullanici.displayName || kullanici.email;
             localStorage.setItem('kullanici_adi', kullaniciAdi);
@@ -748,17 +360,17 @@ Index · HTML
             document.getElementById('dogrulama-ekrani').style.display = 'none';
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
             document.getElementById('puan-degeri').innerText = guvenPuani;
- 
+
             // Premium kontrolü → kahve butonunu göster/gizle
             premiumKontrolEt(kullanici.uid);
- 
+
             if (!harita) {
                 if (navigator.geolocation) {
                     navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
                 }
             }
         }
- 
+
         let kirmiziIkon = L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
@@ -769,7 +381,7 @@ Index · HTML
             shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
             iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
         });
- 
+
         function konumGuncelle(position) {
             guncelEnlem = position.coords.latitude;
             guncelBoylam = position.coords.longitude;
@@ -794,9 +406,9 @@ Index · HTML
                 canliAcilDurumDinleyicisi();
             }
         }
- 
+
         function konumHatasi(error) { console.log("Konum hatası."); }
- 
+
         function ayarlariAc() {
             let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap\n\nYapmak istediğiniz işlemin numarasını yazın:");
             if (secim == "1") {
@@ -812,13 +424,13 @@ Index · HTML
                 auth.signOut().then(() => { location.reload(); });
             }
         }
- 
+
         document.getElementById('risk-buton').addEventListener('click', function () {
             document.getElementById('risk-menusu').style.display = 'block';
         });
- 
+
         function menuyuKapat() { document.getElementById('risk-menusu').style.display = 'none'; }
- 
+
         function riskEkle(riskTuru) {
             let simdi = new Date().getTime();
             const ENGEL_SURESI = 60 * 60 * 1000;
@@ -840,7 +452,7 @@ Index · HTML
                 });
             }
         }
- 
+
         function kayitliRiskleriYukle() {
             db.collection("riskler").onSnapshot((snapshot) => {
                 riskKatmani.clearLayers();
@@ -865,25 +477,25 @@ Index · HTML
                 });
             });
         }
- 
+
         function riskDogrula(rId) {
             if (localStorage.getItem('onaylandi_' + rId)) { alert("Bu riski zaten onayladınız!"); return; }
             db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(1) })
                 .then(() => { localStorage.setItem('onaylandi_' + rId, 'true'); puanGuncelle(2); });
         }
- 
+
         function tehlikeYokBildir(rId) {
             if (localStorage.getItem('tehlike_yok_' + rId)) { alert("Zaten bildirim yaptınız!"); return; }
             db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(-1) })
                 .then(() => { localStorage.setItem('tehlike_yok_' + rId, 'true'); puanGuncelle(1); });
         }
- 
+
         function puanGuncelle(deger) {
             guvenPuani += deger;
             localStorage.setItem('guvenPuani', guvenPuani);
             document.getElementById('puan-degeri').innerText = guvenPuani;
         }
- 
+
         document.getElementById('acil-buton').addEventListener('click', function () {
             let buton = document.getElementById('acil-buton');
             if (acilTelemetriInterval) {
@@ -933,11 +545,11 @@ Index · HTML
                 });
             } else { alert("Konum bekleniyor, tekrar deneyin."); }
         });
- 
+
         let dahaOnceUyarilanlar = {};
         let acilDurumSireni = new Audio('https://actions.google.com/sounds/v1/alarms/analog_watch_alarm.ogg');
         acilDurumSireni.loop = true;
- 
+
         function canliAcilDurumDinleyicisi() {
             db.collection("acil_durumlar").where("aktif", "==", true).onSnapshot((snapshot) => {
                 snapshot.docChanges().forEach((change) => {
@@ -983,7 +595,7 @@ Index · HTML
                 });
             });
         }
- 
+
         function alarmKapat() {
             document.getElementById('acil-alarm-ekrani').style.display = "none";
             acilDurumSireni.pause();
@@ -992,6 +604,3 @@ Index · HTML
     </script>
 </body>
 </html>
- 
-
-
