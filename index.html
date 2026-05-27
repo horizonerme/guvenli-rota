@@ -107,31 +107,6 @@
             box-shadow: 0px 2px 6px rgba(200,121,58,0.3);
         }
 
-        /* ☕ SHOPIER MODAL */
-        #shopier-modal {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #fff;
-            z-index: 99999;
-            flex-direction: column;
-        }
-        #shopier-modal-header {
-            display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(135deg, #c8793a, #e8a45a);
-            padding: 12px 16px;
-            color: white;
-        }
-        #shopier-modal-header span {
-            font-size: 15px; font-weight: bold;
-        }
-        #shopier-kapat {
-            background: rgba(255,255,255,0.3); border: none; color: white;
-            font-size: 18px; font-weight: bold; width: 34px; height: 34px;
-            border-radius: 50%; cursor: pointer; line-height: 34px; text-align: center;
-        }
-        #shopier-iframe {
-            flex: 1; border: none; width: 100%; height: 100%;
-        }
 
         #risk-menusu {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -206,15 +181,6 @@
         </div>
     </div>
 
-    <!-- ☕ SHOPIER MODAL -->
-    <div id="shopier-modal">
-        <div id="shopier-modal-header">
-            <span>☕ Bize Destek Ol</span>
-            <button id="shopier-kapat" onclick="shopierKapat()">✕</button>
-        </div>
-        <iframe id="shopier-iframe" src="" allow="payment"></iframe>
-    </div>
-
     <div id="map"></div>
     <div id="guven-puani-rozet">🛡️ Güven Puanı: <span id="puan-degeri">50</span></div>
     <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
@@ -262,18 +228,9 @@
         let acilDokumanId = null;
         let guvenPuani = 50;
 
-        // ☕ Kahve butonuna tıklanınca Shopier modal aç
+        // ☕ Kahve butonuna tıklanınca Shopier'e git (geri tuşu uygulamaya döner)
         function kahveAc() {
-            var modal = document.getElementById('shopier-modal');
-            var iframe = document.getElementById('shopier-iframe');
-            iframe.src = 'https://www.shopier.com/horizoner/47576302';
-            modal.style.display = 'flex';
-        }
-        function shopierKapat() {
-            var modal = document.getElementById('shopier-modal');
-            var iframe = document.getElementById('shopier-iframe');
-            modal.style.display = 'none';
-            iframe.src = '';
+            window.location.href = 'https://www.shopier.com/horizoner/47576302';
         }
 
         // Premium durumunu kontrol et ve kahve butonunu göster/gizle
