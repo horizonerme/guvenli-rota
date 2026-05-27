@@ -228,9 +228,10 @@
         let acilDokumanId = null;
         let guvenPuani = 50;
 
-        // ☕ Kahve butonuna tıklanınca Shopier'e git (geri tuşu uygulamaya döner)
+        // ☕ Android Chrome'da aç, WebView uygulama sayfasında kalır
         function kahveAc() {
-            window.location.href = 'https://www.shopier.com/horizoner/47576302';
+            var intentUrl = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
+            window.location.href = intentUrl;
         }
 
         // Premium durumunu kontrol et ve kahve butonunu göster/gizle
