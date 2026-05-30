@@ -326,10 +326,8 @@
         function premiumKontrolEt(uid) {
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
                 isPremium = doc.exists && doc.data().premium === true;
-                alert('UID: ' + uid + ' | Belge var: ' + doc.exists + ' | Premium: ' + isPremium);
                 document.getElementById('kahve-buton').style.display = isPremium ? 'none' : 'block';
-            }).catch((e) => {
-                alert('HATA: ' + e.message);
+            }).catch(() => {
                 isPremium = false;
                 document.getElementById('kahve-buton').style.display = 'block';
             });
