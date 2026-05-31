@@ -827,20 +827,21 @@
                 if (!sirenCalisiyor) return;
                 try {
                     let ctx = getAudioCtx();
-                    let gain = ctx.createGain();
-                    gain.gain.setValueAtTime(0.35, ctx.currentTime);
-                    gain.connect(ctx.destination);
-                    // 960Hz → 770Hz → 960Hz (1 döngü = 1 saniye)
+                    // Yumuşak siren: triangle dalga + düşük gain + yavaş sweep
                     let osc = ctx.createOscillator();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(960, ctx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(770, ctx.currentTime + 0.5);
-                    osc.frequency.linearRampToValueAtTime(960, ctx.currentTime + 1.0);
+                    let gain = ctx.createGain();
+                    osc.type = 'triangle'; // sine'den yumuşak
                     osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    gain.gain.setValueAtTime(0.18, ctx.currentTime); // daha sessiz
+                    // Yavaş sweep: 620Hz → 820Hz → 620Hz (1.6s)
+                    osc.frequency.setValueAtTime(620, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(820, ctx.currentTime + 0.8);
+                    osc.frequency.linearRampToValueAtTime(620, ctx.currentTime + 1.6);
                     osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 1.0);
+                    osc.stop(ctx.currentTime + 1.6);
                 } catch(e) {}
-                sirenTimeout = setTimeout(calSiren, 1000);
+                sirenTimeout = setTimeout(calSiren, 1600);
             }
             calSiren();
         }
@@ -850,25 +851,24 @@
             if (sirenTimeout) { clearTimeout(sirenTimeout); sirenTimeout = null; }
         }
 
-        // Güvenli bölge uyarı sesi - sadece siren çalmıyorsa
+        // Güvenli bölge uyarı sesi - daha belirgin
         function guvenliBolyeUyariSesi() {
-            if (sirenCalisiyor) return; // Siren çalıyorsa karıştırma
+            if (sirenCalisiyor) return;
             try {
                 let ctx = getAudioCtx();
-                let gain = ctx.createGain();
-                gain.connect(ctx.destination);
-                // 3 kısa yükselen bip: uyarı tonu
-                [[0, 660], [0.3, 780], [0.6, 960]].forEach(([gecikme, frek]) => {
+                // 3 belirgin bip - her biri ayrı gain node
+                [[0, 520, 0.4], [0.4, 620, 0.4], [0.8, 750, 0.4]].forEach(([gecikme, frek, vol]) => {
                     let osc = ctx.createOscillator();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(frek, ctx.currentTime + gecikme);
                     let g = ctx.createGain();
+                    osc.type = 'square'; // square daha keskin ve duyulur
+                    osc.frequency.value = frek;
                     g.gain.setValueAtTime(0, ctx.currentTime + gecikme);
-                    g.gain.linearRampToValueAtTime(0.35, ctx.currentTime + gecikme + 0.04);
-                    g.gain.linearRampToValueAtTime(0, ctx.currentTime + gecikme + 0.22);
+                    g.gain.linearRampToValueAtTime(vol, ctx.currentTime + gecikme + 0.02);
+                    g.gain.setValueAtTime(vol, ctx.currentTime + gecikme + 0.25);
+                    g.gain.linearRampToValueAtTime(0, ctx.currentTime + gecikme + 0.35);
                     osc.connect(g); g.connect(ctx.destination);
                     osc.start(ctx.currentTime + gecikme);
-                    osc.stop(ctx.currentTime + gecikme + 0.25);
+                    osc.stop(ctx.currentTime + gecikme + 0.38);
                 });
             } catch(e) {}
         }
