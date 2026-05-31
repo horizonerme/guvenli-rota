@@ -102,6 +102,45 @@
             z-index: 999; cursor: pointer; white-space: nowrap;
         }
 
+        /* GÜVENLİ BÖLGE UYARI BANNER */
+        #guvenli-bolge-banner {
+            display: none;
+            position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white; padding: 12px 20px;
+            z-index: 99997; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: center; min-width: 250px;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        #guvenli-bolge-banner .gb-metin { font-size: 14px; font-weight: bold; }
+        #guvenli-bolge-banner .gb-alt { font-size: 12px; opacity: 0.9; margin-top: 3px; }
+
+        /* GÜVENLİ BÖLGE MODAL */
+        #guvenli-bolge-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6); z-index: 10000;
+            justify-content: center; align-items: center;
+        }
+        #guvenli-bolge-kutu {
+            background: white; border-radius: 20px; padding: 25px;
+            width: 85%; max-width: 320px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #guvenli-bolge-kutu h3 { margin: 0 0 8px 0; color: #1a1a2e; font-size: 18px; }
+        #guvenli-bolge-kutu p { color: #666; font-size: 13px; margin: 0 0 15px 0; }
+        .gb-secim-btn {
+            width: 100%; padding: 12px; margin: 5px 0; border: 2px solid #28a745;
+            border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;
+            background: white; color: #28a745; transition: all 0.2s;
+        }
+        .gb-secim-btn:active { background: #28a745; color: white; }
+        .gb-secim-btn.secili { background: #28a745; color: white; }
+
         /* YAKIN RİSK BİLDİRİM BANNER */
         #risk-bildirim-banner {
             display: none;
@@ -222,6 +261,24 @@
     </style>
 </head>
 <body>
+
+    <!-- GÜVENLİ BÖLGE UYARI BANNER -->
+    <div id="guvenli-bolge-banner">
+        <div class="gb-metin">⚠️ Güvenli bölgenizden çıktınız!</div>
+        <div class="gb-alt" id="gb-mesafe-metin"></div>
+    </div>
+
+    <!-- GÜVENLİ BÖLGE MODAL -->
+    <div id="guvenli-bolge-modal">
+        <div id="guvenli-bolge-kutu">
+            <h3>🟢 Güvenli Bölge Belirle</h3>
+            <p>Bu noktaya güvenli bölge eklemek istiyorsunuz.<br>Yarıçap seçin:</p>
+            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(200)">📍 200 metre</button>
+            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(500)">📍 500 metre</button>
+            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(1000)">📍 1 kilometre</button>
+            <button class="aile-btn" style="background:#ccc; color:#333; margin-top:8px;" onclick="guvenliModalKapat()">İptal</button>
+        </div>
+    </div>
 
     <!-- YAKIN RİSK BİLDİRİM BANNER -->
     <div id="risk-bildirim-banner">
@@ -379,6 +436,14 @@
         let bannerTimeout = null;
         let ilkYukleme = true; // İlk yüklemede mevcut riskleri bildirme
 
+        // Güvenli bölge değişkenleri
+        let guvenliBolyeKonum = null; // {lat, lng}
+        let guvenliBolyeYaricap = 0;
+        let guvenliBolyeDaire = null;
+        let guvenliBolyeKontrolInterval = null;
+        let guvenliBolyeBannerGosteriyor = false;
+        let uzunBasTimeout = null;
+
         // Aile takip değişkenleri
         let aktifGrupKodu = null;
         let aileKonumInterval = null;
@@ -413,6 +478,103 @@
             banner.style.display = 'block';
             if (bannerTimeout) clearTimeout(bannerTimeout);
             bannerTimeout = setTimeout(() => { bannerKapat(); }, 6000);
+        }
+
+        // ===== GÜVENLİ BÖLGE =====
+
+        function guvenliModalKapat() {
+            document.getElementById('guvenli-bolge-modal').style.display = 'none';
+            guvenliBolyeKonum = null;
+        }
+
+        function guvenliBolyeEkle(yaricap) {
+            if (!guvenliBolyeKonum) return;
+            document.getElementById('guvenli-bolge-modal').style.display = 'none';
+
+            // Önceki daireyi kaldır
+            if (guvenliBolyeDaire) { harita.removeLayer(guvenliBolyeDaire); }
+
+            guvenliBolyeYaricap = yaricap;
+
+            // Haritada yeşil daire çiz
+            guvenliBolyeDaire = L.circle([guvenliBolyeKonum.lat, guvenliBolyeKonum.lng], {
+                radius: yaricap,
+                color: '#28a745',
+                fillColor: '#28a745',
+                fillOpacity: 0.15,
+                weight: 2
+            }).addTo(harita).bindPopup('🟢 Güvenli Bölge (' + (yaricap >= 1000 ? yaricap/1000 + ' km' : yaricap + ' m') + ')<br><small>Kaldırmak için tıklayın</small>')
+              .on('click', function() {
+                  if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) {
+                      guvenliBolyeKaldir();
+                  }
+              });
+
+            // LocalStorage'a kaydet
+            localStorage.setItem('guvenli_bolge', JSON.stringify({
+                lat: guvenliBolyeKonum.lat,
+                lng: guvenliBolyeKonum.lng,
+                yaricap: yaricap
+            }));
+
+            // Kontrol döngüsünü başlat
+            guvenliBolyeKontrolBaslat();
+            alert('✅ Güvenli bölge eklendi! Bu bölgeden çıkınca uyarı alacaksınız.');
+        }
+
+        function guvenliBolyeKaldir() {
+            if (guvenliBolyeDaire) { harita.removeLayer(guvenliBolyeDaire); guvenliBolyeDaire = null; }
+            if (guvenliBolyeKontrolInterval) { clearInterval(guvenliBolyeKontrolInterval); guvenliBolyeKontrolInterval = null; }
+            guvenliBolyeKonum = null;
+            guvenliBolyeYaricap = 0;
+            guvenliBolyeBannerGosteriyor = false;
+            document.getElementById('guvenli-bolge-banner').style.display = 'none';
+            localStorage.removeItem('guvenli_bolge');
+        }
+
+        function guvenliBolyeKontrolBaslat() {
+            if (guvenliBolyeKontrolInterval) clearInterval(guvenliBolyeKontrolInterval);
+            guvenliBolyeKontrolInterval = setInterval(() => {
+                if (!guvenliBolyeKonum || guncelEnlem === 0) return;
+                let mesafe = mesafeHesapla(guncelEnlem, guncelBoylam, guvenliBolyeKonum.lat, guvenliBolyeKonum.lng);
+                if (mesafe > guvenliBolyeYaricap) {
+                    // Bölge dışında
+                    if (!guvenliBolyeBannerGosteriyor) {
+                        guvenliBolyeBannerGosteriyor = true;
+                        let banner = document.getElementById('guvenli-bolge-banner');
+                        document.getElementById('gb-mesafe-metin').innerText = 'Güvenli bölgenize ' + mesafe + ' metre uzaktasınız';
+                        banner.style.display = 'block';
+                    }
+                } else {
+                    // Bölge içinde
+                    if (guvenliBolyeBannerGosteriyor) {
+                        guvenliBolyeBannerGosteriyor = false;
+                        document.getElementById('guvenli-bolge-banner').style.display = 'none';
+                    }
+                }
+            }, 15000); // 15 saniyede bir kontrol
+        }
+
+        function kayitliGuvenliBolyeYukle() {
+            let kayitli = localStorage.getItem('guvenli_bolge');
+            if (kayitli && isPremium) {
+                try {
+                    let veri = JSON.parse(kayitli);
+                    guvenliBolyeKonum = { lat: veri.lat, lng: veri.lng };
+                    guvenliBolyeYaricap = veri.yaricap;
+                    guvenliBolyeDaire = L.circle([veri.lat, veri.lng], {
+                        radius: veri.yaricap,
+                        color: '#28a745', fillColor: '#28a745',
+                        fillOpacity: 0.15, weight: 2
+                    }).addTo(harita).bindPopup('🟢 Güvenli Bölge (' + (veri.yaricap >= 1000 ? veri.yaricap/1000 + ' km' : veri.yaricap + ' m') + ')<br><small>Kaldırmak için tıklayın</small>')
+                      .on('click', function() {
+                          if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) {
+                              guvenliBolyeKaldir();
+                          }
+                      });
+                    guvenliBolyeKontrolBaslat();
+                } catch(e) { localStorage.removeItem('guvenli_bolge'); }
+            }
         }
 
         function bannerKapat() {
@@ -786,6 +948,44 @@
                 kayitliRiskleriYukle();
                 canliAcilDurumDinleyicisi();
                 setTimeout(kayitliGrubaBaslan, 1000);
+                setTimeout(kayitliGuvenliBolyeYukle, 1500);
+
+                // Haritaya uzun basma - güvenli bölge ekle
+                harita.on('contextmenu', function(e) {
+                    // Sağ tık veya uzun bas
+                    if (!isPremium) {
+                        alert('Güvenli bölge belirleme Premium özelliğidir.');
+                        return;
+                    }
+                    guvenliBolyeKonum = { lat: e.latlng.lat, lng: e.latlng.lng };
+                    document.getElementById('guvenli-bolge-modal').style.display = 'flex';
+                });
+
+                // Mobil uzun basma (touchstart/touchend)
+                let touchBaslangic = null;
+                document.getElementById('map').addEventListener('touchstart', function(e) {
+                    touchBaslangic = Date.now();
+                    uzunBasTimeout = setTimeout(() => {
+                        if (!isPremium) {
+                            alert('Güvenli bölge belirleme Premium özelliğidir.');
+                            return;
+                        }
+                        let touch = e.touches[0];
+                        let nokta = harita.containerPointToLatLng(
+                            L.point(touch.clientX, touch.clientY)
+                        );
+                        guvenliBolyeKonum = { lat: nokta.lat, lng: nokta.lng };
+                        document.getElementById('guvenli-bolge-modal').style.display = 'flex';
+                    }, 600);
+                }, { passive: true });
+
+                document.getElementById('map').addEventListener('touchend', function() {
+                    if (uzunBasTimeout) { clearTimeout(uzunBasTimeout); uzunBasTimeout = null; }
+                }, { passive: true });
+
+                document.getElementById('map').addEventListener('touchmove', function() {
+                    if (uzunBasTimeout) { clearTimeout(uzunBasTimeout); uzunBasTimeout = null; }
+                }, { passive: true });
             }
         }
 
