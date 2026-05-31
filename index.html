@@ -88,6 +88,7 @@
     <div id="guvenli-bolge-banner">
         <div class="gb-metin" id="gb-metin">⚠️ Güvenli bölge uyarısı!</div>
         <div class="gb-alt" id="gb-mesafe-metin"></div>
+        <button onclick="guvenliBolyeBannerKapat()" style="margin-top:8px; background:rgba(255,255,255,0.3); border:none; color:white; font-weight:bold; padding:5px 16px; border-radius:8px; cursor:pointer; font-size:13px;">✓ Tamam</button>
     </div>
 
     <!-- ÇİZİM MODU TOOLBAR -->
@@ -299,6 +300,11 @@
             if (bannerTimeout) clearTimeout(bannerTimeout);
             bannerTimeout = setTimeout(bannerKapat, 6000);
         }
+        function guvenliBolyeBannerKapat() {
+            document.getElementById('guvenli-bolge-banner').style.display = 'none';
+            guvenliBolyeBannerGosteriyor = false; // Sessize alındı, bir sonraki kontrolde tekrar çalabilir
+        }
+
         function bannerKapat() {
             document.getElementById('risk-bildirim-banner').style.display = 'none';
             if (bannerTimeout) { clearTimeout(bannerTimeout); bannerTimeout = null; }
@@ -511,6 +517,7 @@
                         document.getElementById('gb-mesafe-metin').innerText = disaridakiIsimler.join(', ') + ' bölge dışında!';
                         banner.style.display = 'block';
                         guvenliBolyeBannerGosteriyor = true;
+                        guvenliBolyeUyariSesi();
                     } else if (guvenliBolyeBannerGosteriyor) {
                         banner.style.display = 'none';
                         guvenliBolyeBannerGosteriyor = false;
@@ -793,39 +800,75 @@
         });
 
         let dahaOnceUyarilanlar = {}, canliTakipIkonlari2 = {};
-        // Web Audio API ile siren sesi - dış URL gerektirmez
+        // Web Audio API - acil siren
         let audioCtx = null;
-        let sirenInterval = null;
+        let sirenOscillator = null;
+        let sirenGain = null;
         let sirenCalisiyor = false;
+        let sirenAnimFrame = null;
 
         function sirenBaslat() {
             if (sirenCalisiyor) return;
-            sirenCalisiyor = true;
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            let frekans = 880;
-            let yukari = true;
-            sirenInterval = setInterval(() => {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.connect(gain); gain.connect(audioCtx.destination);
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(frekans, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
-                osc.start(audioCtx.currentTime);
-                osc.stop(audioCtx.currentTime + 0.12);
-                frekans += yukari ? 40 : -40;
-                if (frekans > 1200) yukari = false;
-                if (frekans < 700) yukari = true;
-            }, 120);
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                sirenCalisiyor = true;
+
+                sirenGain = audioCtx.createGain();
+                sirenGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                sirenGain.connect(audioCtx.destination);
+
+                sirenOscillator = audioCtx.createOscillator();
+                sirenOscillator.type = 'sine';
+                sirenOscillator.connect(sirenGain);
+                sirenOscillator.start();
+
+                // Klasik ambulans sireni: 770Hz → 960Hz tekrarlı
+                let baslangic = audioCtx.currentTime;
+                function sirenDalga() {
+                    if (!sirenCalisiyor || !sirenOscillator) return;
+                    let t = audioCtx.currentTime;
+                    sirenOscillator.frequency.cancelScheduledValues(t);
+                    // Alaşağı: 960 → 770 Hz (0.5s) → 770 → 960 Hz (0.5s)
+                    sirenOscillator.frequency.setValueAtTime(960, t);
+                    sirenOscillator.frequency.linearRampToValueAtTime(770, t + 0.5);
+                    sirenOscillator.frequency.linearRampToValueAtTime(960, t + 1.0);
+                    setTimeout(sirenDalga, 950);
+                }
+                sirenDalga();
+            } catch(e) { console.log('Siren hatası:', e); }
         }
 
         function sirenDurdur() {
             sirenCalisiyor = false;
-            if (sirenInterval) { clearInterval(sirenInterval); sirenInterval = null; }
+            try {
+                if (sirenOscillator) { sirenOscillator.stop(); sirenOscillator.disconnect(); sirenOscillator = null; }
+                if (sirenGain) { sirenGain.disconnect(); sirenGain = null; }
+            } catch(e) {}
         }
 
-        // Eski kodla uyum için
+        // Güvenli bölge için daha kısa uyarı sesi
+        function guvenliBolyeUyariSesi() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                let gain = audioCtx.createGain();
+                gain.connect(audioCtx.destination);
+                // 3 kısa bip
+                [0, 0.35, 0.7].forEach((gecikme) => {
+                    let osc = audioCtx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + gecikme);
+                    gain.gain.setValueAtTime(0, audioCtx.currentTime + gecikme);
+                    gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + gecikme + 0.05);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + gecikme + 0.25);
+                    osc.connect(gain);
+                    osc.start(audioCtx.currentTime + gecikme);
+                    osc.stop(audioCtx.currentTime + gecikme + 0.3);
+                });
+            } catch(e) {}
+        }
+
         let acilDurumSireni = { play: function() { sirenBaslat(); return Promise.resolve(); }, pause: sirenDurdur, currentTime: 0 };
         function canliAcilDurumDinleyicisi() {
             db.collection("acil_durumlar").where("aktif","==",true).onSnapshot((snapshot) => {
@@ -842,7 +885,7 @@
                         }
                         if (canliTakipIkonlari[aId]) canliTakipIkonlari[aId].setLatLng([ad.enlem, ad.boylam]);
                         else canliTakipIkonlari[aId] = L.marker([ad.enlem, ad.boylam], { icon:canliMaviIkon }).addTo(harita).bindPopup("⚠️ <b>" + ad.isim + " (CANLI TAKİP)</b>").openPopup();
-                        document.getElementById('takip-baslat-btn').onclick = function() { harita.setView([ad.enlem,ad.boylam],18); canliTakipIkonlari[aId].openPopup(); document.getElementById('acil-alarm-ekrani').style.display="none"; };
+                        document.getElementById('takip-baslat-btn').onclick = function() { harita.setView([ad.enlem,ad.boylam],18); canliTakipIkonlari[aId].openPopup(); document.getElementById('acil-alarm-ekrani').style.display="none"; sirenDurdur(); };
                     }
                     if (change.type === "modified" && ad.isim !== kullaniciAdi && canliTakipIkonlari[aId]) canliTakipIkonlari[aId].setLatLng([ad.enlem, ad.boylam]);
                     if (change.type === "removed" && canliTakipIkonlari[aId]) { harita.removeLayer(canliTakipIkonlari[aId]); delete canliTakipIkonlari[aId]; delete dahaOnceUyarilanlar[aId]; alert("Tehlike durumu sona erdi. Kişi güvende."); alarmKapat(); }
