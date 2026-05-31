@@ -4,17 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GüvenliRota AI - Ana Ekran</title>
-    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
     <style>
         body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; }
         #map { height: 100vh; width: 100vw; z-index: 1; }
-
         #giris-ekrani {
             display: flex; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
@@ -22,8 +19,7 @@
         }
         #giris-kutusu {
             background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px;
-            width: 85%; max-width: 350px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 85%; max-width: 350px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         #giris-kutusu h2 { margin: 0 0 5px 0; color: #1a1a2e; font-size: 22px; }
         #giris-kutusu p { margin: 0 0 20px 0; color: #666; font-size: 13px; }
@@ -32,23 +28,13 @@
             border-radius: 10px; font-size: 15px; box-sizing: border-box; outline: none;
         }
         .giris-input:focus { border-color: #0f3460; }
-        .giris-btn {
-            width: 100%; padding: 13px; margin: 8px 0; border: none; border-radius: 10px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-        }
+        .giris-btn { width: 100%; padding: 13px; margin: 8px 0; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         #btn-giris { background: #0f3460; color: white; }
         #btn-kayit { background: #28a745; color: white; }
         #giris-hata { font-size: 13px; margin: 5px 0; min-height: 18px; }
-        #giris-sekme {
-            display: flex; margin-bottom: 20px; border-radius: 10px; overflow: hidden;
-            border: 2px solid #e0e0e0;
-        }
-        .sekme-btn {
-            flex: 1; padding: 10px; border: none; cursor: pointer; font-size: 14px;
-            font-weight: bold; background: #f5f5f5; color: #666;
-        }
+        #giris-sekme { display: flex; margin-bottom: 20px; border-radius: 10px; overflow: hidden; border: 2px solid #e0e0e0; }
+        .sekme-btn { flex: 1; padding: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: bold; background: #f5f5f5; color: #666; }
         .sekme-btn.aktif { background: #0f3460; color: white; }
-
         #dogrulama-ekrani {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
@@ -56,17 +42,15 @@
         }
         #dogrulama-kutusu {
             background: rgba(255,255,255,0.95); border-radius: 20px; padding: 30px;
-            width: 85%; max-width: 350px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 85%; max-width: 350px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         #dogrulama-kutusu h2 { color: #1a1a2e; font-size: 20px; margin-bottom: 10px; }
         #dogrulama-kutusu p { color: #666; font-size: 14px; line-height: 1.5; }
-
         #acil-buton {
             position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
             background-color: #ff0033; color: white; border: none; padding: 15px 30px;
             font-size: 20px; font-weight: bold; border-radius: 50px;
-            box-shadow: 0px 8px 15px rgba(255, 0, 51, 0.4); z-index: 999; cursor: pointer;
+            box-shadow: 0px 8px 15px rgba(255,0,51,0.4); z-index: 999; cursor: pointer;
             width: 80%; max-width: 300px; text-align: center;
         }
         .leaflet-bottom.leaflet-left { bottom: 145px !important; }
@@ -88,11 +72,10 @@
             z-index: 999; cursor: pointer;
         }
         #kahve-buton {
-            display: none; position: fixed; top: 194px; left: 20px;
+            display: none; position: fixed; top: 237px; left: 20px;
             background: linear-gradient(135deg, #c8793a, #e8a45a);
             color: white; border: none; padding: 7px 13px; font-size: 12px;
-            font-weight: bold; border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(200,121,58,0.4);
+            font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(200,121,58,0.4);
             z-index: 999; cursor: pointer; white-space: nowrap;
         }
         #aile-buton {
@@ -101,102 +84,69 @@
             font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
             z-index: 999; cursor: pointer; white-space: nowrap;
         }
+        #guvenli-bolge-buton {
+            position: fixed; top: 194px; left: 20px; background-color: #28a745;
+            color: white; border: none; padding: 8px 15px; font-size: 13px;
+            font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2);
+            z-index: 999; cursor: pointer; white-space: nowrap;
+        }
+
+        /* ÇİZİM MODU TOOLBAR */
+        #cizim-toolbar {
+            display: none; position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%);
+            background: rgba(20,20,40,0.92); color: white; border-radius: 16px;
+            padding: 12px 16px; z-index: 9999; text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4); min-width: 280px;
+        }
+        #cizim-toolbar .cizim-bilgi {
+            font-size: 13px; margin-bottom: 10px; opacity: 0.9;
+        }
+        #cizim-toolbar .cizim-sayac {
+            font-size: 18px; font-weight: bold; color: #4dff88; margin-bottom: 10px;
+        }
+        .cizim-btn {
+            padding: 9px 16px; border: none; border-radius: 8px;
+            font-size: 13px; font-weight: bold; cursor: pointer; margin: 3px;
+        }
 
         /* GÜVENLİ BÖLGE UYARI BANNER */
         #guvenli-bolge-banner {
-            display: none;
-            position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: white; padding: 12px 20px;
-            z-index: 99997; border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: none; position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #f39c12, #e67e22); color: white; padding: 12px 20px;
+            z-index: 99997; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             text-align: center; min-width: 250px;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
         #guvenli-bolge-banner .gb-metin { font-size: 14px; font-weight: bold; }
         #guvenli-bolge-banner .gb-alt { font-size: 12px; opacity: 0.9; margin-top: 3px; }
 
-        /* GÜVENLİ BÖLGE MODAL */
-        #guvenli-bolge-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); z-index: 10000;
-            justify-content: center; align-items: center;
-        }
-        #guvenli-bolge-kutu {
-            background: white; border-radius: 20px; padding: 25px;
-            width: 85%; max-width: 320px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        }
-        #guvenli-bolge-kutu h3 { margin: 0 0 8px 0; color: #1a1a2e; font-size: 18px; }
-        #guvenli-bolge-kutu p { color: #666; font-size: 13px; margin: 0 0 15px 0; }
-        .gb-secim-btn {
-            width: 100%; padding: 12px; margin: 5px 0; border: 2px solid #28a745;
-            border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer;
-            background: white; color: #28a745; transition: all 0.2s;
-        }
-        .gb-secim-btn:active { background: #28a745; color: white; }
-        .gb-secim-btn.secili { background: #28a745; color: white; }
-
-        #guvenli-bolge-duzenle-modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); z-index: 10000;
-            justify-content: center; align-items: center;
-        }
-
         /* YAKIN RİSK BİLDİRİM BANNER */
         #risk-bildirim-banner {
-            display: none;
-            position: fixed; top: 0; left: 0; width: 100%;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white; padding: 12px 16px;
+            display: none; position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; padding: 12px 16px;
             z-index: 99997; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            animation: slideDown 0.3s ease;
         }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-        #risk-bildirim-banner .banner-icerik {
-            display: flex; align-items: center; justify-content: space-between;
-            max-width: 500px; margin: 0 auto;
-        }
-        #risk-bildirim-banner .banner-metin {
-            font-size: 14px; font-weight: bold; flex: 1;
-        }
+        #risk-bildirim-banner .banner-icerik { display: flex; align-items: center; justify-content: space-between; max-width: 500px; margin: 0 auto; }
+        #risk-bildirim-banner .banner-metin { font-size: 14px; font-weight: bold; flex: 1; }
         #risk-bildirim-banner .banner-kapat {
             background: rgba(255,255,255,0.3); border: none; color: white;
             font-size: 18px; width: 28px; height: 28px; border-radius: 50%;
             cursor: pointer; margin-left: 10px; line-height: 28px; text-align: center;
         }
-        #risk-bildirim-banner .banner-mesafe {
-            font-size: 12px; opacity: 0.9; margin-top: 2px;
-        }
+        #risk-bildirim-banner .banner-mesafe { font-size: 12px; opacity: 0.9; margin-top: 2px; }
 
         /* AİLE TAKİP MODALI */
         #aile-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.6); z-index: 10000;
-            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center;
         }
         #aile-kutu {
             background: white; border-radius: 20px; padding: 25px;
-            width: 85%; max-width: 340px; text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 85%; max-width: 340px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
         #aile-kutu h3 { margin: 0 0 5px 0; color: #1a1a2e; font-size: 18px; }
         #aile-kutu p { color: #666; font-size: 13px; margin: 0 0 15px 0; }
-        .aile-btn {
-            width: 100%; padding: 12px; margin: 6px 0; border: none; border-radius: 10px;
-            font-size: 15px; font-weight: bold; cursor: pointer;
-        }
-        #aile-grup-kodu {
-            font-size: 28px; font-weight: bold; color: #6f42c1; letter-spacing: 3px;
-            background: #f3f0ff; padding: 12px; border-radius: 10px; margin: 10px 0;
-        }
+        .aile-btn { width: 100%; padding: 12px; margin: 6px 0; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; }
+        #aile-grup-kodu { font-size: 28px; font-weight: bold; color: #6f42c1; letter-spacing: 3px; background: #f3f0ff; padding: 12px; border-radius: 10px; margin: 10px 0; }
         #aile-kod-input {
             width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #e0e0e0;
             border-radius: 10px; font-size: 18px; box-sizing: border-box;
@@ -205,65 +155,38 @@
         #aile-kod-input:focus { border-color: #6f42c1; }
         #aile-mesaj { font-size: 13px; min-height: 18px; margin: 5px 0; }
         #aile-uyeler-listesi { text-align: left; margin: 10px 0; max-height: 150px; overflow-y: auto; }
-        .uye-satir {
-            display: flex; align-items: center; padding: 6px 8px; margin: 4px 0;
-            background: #f8f9fa; border-radius: 8px; font-size: 13px;
-        }
+        .uye-satir { display: flex; align-items: center; padding: 6px 8px; margin: 4px 0; background: #f8f9fa; border-radius: 8px; font-size: 13px; }
         .uye-renk { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
-
         #ucretsiz-aile-ekrani {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.7); z-index: 10001;
-            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.7); z-index: 10001; justify-content: center; align-items: center;
         }
-        #ucretsiz-aile-kutu {
-            background: white; border-radius: 20px; padding: 30px;
-            width: 85%; max-width: 320px; text-align: center;
-        }
+        #ucretsiz-aile-kutu { background: white; border-radius: 20px; padding: 30px; width: 85%; max-width: 320px; text-align: center; }
         #ucretsiz-aile-kutu h3 { color: #1a1a2e; font-size: 18px; margin: 0 0 8px 0; }
         #ucretsiz-aile-kutu p { color: #666; font-size: 13px; line-height: 1.5; margin: 0 0 15px 0; }
-
         #premium-kilidi {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.7); z-index: 10001;
-            justify-content: center; align-items: center;
+            background: rgba(0,0,0,0.7); z-index: 10001; justify-content: center; align-items: center;
         }
-        #premium-kutu {
-            background: white; border-radius: 20px; padding: 30px;
-            width: 85%; max-width: 320px; text-align: center;
-        }
+        #premium-kutu { background: white; border-radius: 20px; padding: 30px; width: 85%; max-width: 320px; text-align: center; }
         #premium-kutu h3 { color: #1a1a2e; font-size: 20px; margin: 0 0 10px 0; }
         #premium-kutu p { color: #666; font-size: 14px; line-height: 1.5; }
-
         #risk-menusu {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: white; padding: 20px; border-radius: 15px;
             box-shadow: 0px 10px 30px rgba(0,0,0,0.5); z-index: 1000; width: 80%; max-width: 300px; text-align: center;
         }
-        .risk-secenek {
-            display: block; width: 100%; padding: 10px; margin: 10px 0; background: #f1f1f1;
-            border: none; border-radius: 8px; font-size: 16px; cursor: pointer;
-        }
+        .risk-secenek { display: block; width: 100%; padding: 10px; margin: 10px 0; background: #f1f1f1; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
         #menu-kapat { background: #ccc; margin-top: 15px; }
-        .dogrula-btn {
-            display: block; background: #007bff; color: white; border: none; padding: 6px 10px;
-            border-radius: 5px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px;
-        }
+        .dogrula-btn { display: block; background: #007bff; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer; margin-top: 8px; width: 100%; font-weight: bold; font-size: 13px; }
         #acil-alarm-ekrani {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: rgba(255, 0, 0, 0.85); z-index: 99999; color: white;
+            background-color: rgba(255,0,0,0.85); z-index: 99999; color: white;
             text-align: center; justify-content: center; align-content: center; flex-direction: column;
             animation: flasorEfekti 0.6s infinite alternate;
         }
-        @keyframes flasorEfekti {
-            from { background-color: rgba(255, 0, 0, 0.9); }
-            to { background-color: rgba(100, 0, 0, 0.9); }
-        }
-        .alarm-btn {
-            background: white; color: red; border: none; padding: 15px 30px;
-            font-size: 18px; font-weight: bold; border-radius: 10px; margin-top: 20px;
-            cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
+        @keyframes flasorEfekti { from { background-color: rgba(255,0,0,0.9); } to { background-color: rgba(100,0,0,0.9); } }
+        .alarm-btn { background: white; color: red; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 10px; margin-top: 20px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -274,26 +197,14 @@
         <div class="gb-alt" id="gb-mesafe-metin"></div>
     </div>
 
-    <!-- GÜVENLİ BÖLGE EKLE MODAL -->
-    <div id="guvenli-bolge-modal">
-        <div id="guvenli-bolge-kutu">
-            <h3>🟢 Güvenli Bölge Belirle</h3>
-            <p>Bu noktaya güvenli bölge eklemek istiyorsunuz.<br>Yarıçap seçin:</p>
-            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(200)">📍 200 metre</button>
-            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(500)">📍 500 metre</button>
-            <button class="gb-secim-btn" onclick="guvenliBolyeEkle(1000)">📍 1 kilometre</button>
-            <button class="aile-btn" style="background:#ccc; color:#333; margin-top:8px;" onclick="guvenliModalKapat()">İptal</button>
-        </div>
-    </div>
-
-    <!-- GÜVENLİ BÖLGE DÜZENLE MODAL -->
-    <div id="guvenli-bolge-duzenle-modal">
-        <div id="guvenli-bolge-kutu">
-            <h3>🟢 Güvenli Bölge</h3>
-            <p>Ne yapmak istiyorsunuz?</p>
-            <button class="gb-secim-btn" onclick="guvenliBolyeDegistir()">🔄 Yarıçapı Değiştir</button>
-            <button class="aile-btn" style="background:#dc3545; color:white; margin-top:5px;" onclick="guvenliBolyeKaldir()">🗑️ Güvenli Bölgeyi Kaldır</button>
-            <button class="aile-btn" style="background:#ccc; color:#333; margin-top:5px;" onclick="guvenliDuzenleKapat()">İptal</button>
+    <!-- ÇİZİM MODU TOOLBAR -->
+    <div id="cizim-toolbar">
+        <div class="cizim-bilgi">🟢 Haritaya köşe noktaları ekleyin (en az 3)</div>
+        <div class="cizim-sayac"><span id="nokta-sayisi">0</span> nokta eklendi</div>
+        <div>
+            <button class="cizim-btn" style="background:#dc3545; color:white;" onclick="cizimGeriAl()">↩ Geri Al</button>
+            <button class="cizim-btn" id="tamamla-btn" style="background:#28a745; color:white; opacity:0.5;" onclick="cizimTamamla()" disabled>✅ Tamamla</button>
+            <button class="cizim-btn" style="background:#6c757d; color:white;" onclick="cizimIptal()">✕ İptal</button>
         </div>
     </div>
 
@@ -321,9 +232,7 @@
                 <input class="giris-input" type="password" id="giris-sifre" placeholder="Şifre" />
                 <div id="giris-hata"></div>
                 <button class="giris-btn" id="btn-giris" onclick="girisYap()">Giriş Yap</button>
-                <p style="margin-top:10px; font-size:13px;">
-                    <a href="#" onclick="sifreSifirla()" style="color:#0f3460;">Şifremi unuttum</a>
-                </p>
+                <p style="margin-top:10px; font-size:13px;"><a href="#" onclick="sifreSifirla()" style="color:#0f3460;">Şifremi unuttum</a></p>
             </div>
             <div id="form-kayit" style="display:none;">
                 <input class="giris-input" type="text" id="kayit-ad" placeholder="Adınız (haritada görünecek)" />
@@ -338,8 +247,7 @@
     <div id="dogrulama-ekrani">
         <div id="dogrulama-kutusu">
             <h2>📧 E-postanı Doğrula</h2>
-            <p>Kayıt olduğun e-posta adresine bir doğrulama linki gönderdik.<br><br>
-            Lütfen e-postanı kontrol et ve linke tıkla. Ardından aşağıdaki butona bas.</p>
+            <p>Kayıt olduğun e-posta adresine bir doğrulama linki gönderdik.<br><br>Lütfen e-postanı kontrol et ve linke tıkla. Ardından aşağıdaki butona bas.</p>
             <br>
             <button class="giris-btn" style="background:#0f3460; color:white;" onclick="dogrulamayiKontrolEt()">✅ Doğruladım, Giriş Yap</button>
             <button class="giris-btn" style="background:#6c757d; color:white;" onclick="tekrarGonder()">📨 Tekrar Gönder</button>
@@ -351,8 +259,9 @@
     <div id="map"></div>
     <div id="guven-puani-rozet">🛡️ Güven Puanı: <span id="puan-degeri">50</span></div>
     <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
-    <button id="kahve-buton" onclick="kahveAc()">☕ Bize Destek Ol</button>
     <button id="aile-buton" onclick="aileTakipAc()">👨‍👩‍👧 Aile Takip</button>
+    <button id="guvenli-bolge-buton" onclick="guvenliBolyeBaslat()">🟢 Güvenli Bölge</button>
+    <button id="kahve-buton" onclick="kahveAc()">☕ Bize Destek Ol</button>
     <button id="risk-buton">⚠️ Risk Bildir</button>
     <button id="acil-buton">🚨 ACİL DURUM</button>
 
@@ -402,8 +311,7 @@
     <div id="premium-kilidi">
         <div id="premium-kutu">
             <h3>⭐ Premium Özellik</h3>
-            <p>Grup oluşturmak <b>Güvenli Rota Premium</b> üyelerine özeldir.<br><br>
-            Yakında Play Store'dan satın alabileceksiniz!</p>
+            <p>Bu özellik <b>Güvenli Rota Premium</b> üyelerine özeldir.<br><br>Yakında Play Store'dan satın alabileceksiniz!</p>
             <button class="aile-btn" style="background:#0f3460; color:white; margin-top:10px;" onclick="premiumKiliKapat()">Tamam</button>
         </div>
     </div>
@@ -433,207 +341,235 @@
             messagingSenderId: "290399908602",
             appId: "1:290399908602:web:a64ed19148db6832f00f43"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        let kullaniciAdi = "";
-        let kullaniciUid = "";
-        let harita;
-        let riskKatmani;
+        let kullaniciAdi = "", kullaniciUid = "";
+        let harita, riskKatmani;
         let canliTakipIkonlari = {};
-        let guncelEnlem = 0;
-        let guncelBoylam = 0;
-        let acilTelemetriInterval = null;
-        let acilDokumanId = null;
-        let guvenPuani = 50;
-        let isPremium = false;
-        let isAileUye = false;
-        let bannerTimeout = null;
-        let ilkYukleme = true; // İlk yüklemede mevcut riskleri bildirme
+        let guncelEnlem = 0, guncelBoylam = 0;
+        let acilTelemetriInterval = null, acilDokumanId = null;
+        let guvenPuani = 50, isPremium = false, isAileUye = false;
+        let bannerTimeout = null, ilkYukleme = true;
 
-        // Güvenli bölge değişkenleri
-        let guvenliBolyeKonum = null; // {lat, lng}
-        let guvenliBolyeYaricap = 0;
-        let guvenliBolyeDaire = null;
+        // Güvenli bölge - polygon sistemi
+        let cizimModu = false;
+        let cizimNoktalar = []; // [{lat, lng}]
+        let cizimMarkerlar = []; // leaflet markerlar
+        let cizimCizgi = null; // polyline önizleme
+        let guvenliPolygon = null; // tamamlanmış polygon
         let guvenliBolyeKontrolInterval = null;
         let guvenliBolyeBannerGosteriyor = false;
-        let uzunBasTimeout = null;
 
-        // Aile takip değişkenleri
-        let aktifGrupKodu = null;
-        let aileKonumInterval = null;
-        let aileIkonlari = {};
-        let aileUyelerDinleyici = null;
+        // Aile takip
+        let aktifGrupKodu = null, aileKonumInterval = null;
+        let aileIkonlari = {}, aileUyelerDinleyici = null;
         const uye_renkleri = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
 
-        // ☕ Kahve butonu
         function kahveAc() {
-            var intentUrl = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
-            window.location.href = intentUrl;
+            window.location.href = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
         }
 
-        // ===== YAKIN RİSK BİLDİRİM SİSTEMİ =====
-
-        // İki nokta arası mesafe (metre)
         function mesafeHesapla(lat1, lon1, lat2, lon2) {
             const R = 6371000;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+            const dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+            return Math.round(R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
         }
 
+        // Nokta polygon içinde mi? (ray casting)
+        function noktaPolygonIcindeMi(lat, lng, noktalar) {
+            let icinde = false;
+            for (let i = 0, j = noktalar.length-1; i < noktalar.length; j = i++) {
+                let xi = noktalar[i].lat, yi = noktalar[i].lng;
+                let xj = noktalar[j].lat, yj = noktalar[j].lng;
+                if (((yi > lng) !== (yj > lng)) && (lat < (xj-xi)*(lng-yi)/(yj-yi)+xi)) icinde = !icinde;
+            }
+            return icinde;
+        }
+
+        // ===== YAKIN RİSK BİLDİRİM =====
         function yakinRiskBildir(riskTuru, mesafe) {
             if (!isPremium) return;
-            let banner = document.getElementById('risk-bildirim-banner');
             document.getElementById('banner-tur-metin').innerText = riskTuru + ' bildirildi!';
             document.getElementById('banner-mesafe-metin').innerText = '📍 Yaklaşık ' + mesafe + ' metre uzağınızda';
-            banner.style.display = 'block';
+            document.getElementById('risk-bildirim-banner').style.display = 'block';
             if (bannerTimeout) clearTimeout(bannerTimeout);
-            bannerTimeout = setTimeout(() => { bannerKapat(); }, 6000);
+            bannerTimeout = setTimeout(bannerKapat, 6000);
         }
-
-        // ===== GÜVENLİ BÖLGE =====
-
-        function guvenliModalKapat() {
-            document.getElementById('guvenli-bolge-modal').style.display = 'none';
-            guvenliBolyeKonum = null;
-        }
-
-        function guvenliBolyeEkle(yaricap) {
-            if (!guvenliBolyeKonum) return;
-            document.getElementById('guvenli-bolge-modal').style.display = 'none';
-
-            // Önceki daireyi kaldır
-            if (guvenliBolyeDaire) { harita.removeLayer(guvenliBolyeDaire); }
-
-            guvenliBolyeYaricap = yaricap;
-
-            // Haritada yeşil daire çiz
-            guvenliBolyeDaire = L.circle([guvenliBolyeKonum.lat, guvenliBolyeKonum.lng], {
-                radius: yaricap,
-                color: '#28a745',
-                fillColor: '#28a745',
-                fillOpacity: 0.15,
-                weight: 2
-            }).addTo(harita).bindPopup('🟢 Güvenli Bölge (' + (yaricap >= 1000 ? yaricap/1000 + ' km' : yaricap + ' m') + ')<br><small>Kaldırmak için tıklayın</small>')
-              .on('click', function() {
-                  if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) {
-                      guvenliBolyeKaldir();
-                  }
-              });
-
-            // LocalStorage'a kaydet
-            localStorage.setItem('guvenli_bolge', JSON.stringify({
-                lat: guvenliBolyeKonum.lat,
-                lng: guvenliBolyeKonum.lng,
-                yaricap: yaricap
-            }));
-
-            // Kontrol döngüsünü başlat
-            guvenliBolyeKontrolBaslat();
-            alert('✅ Güvenli bölge eklendi! Bu bölgeden çıkınca uyarı alacaksınız.');
-        }
-
-        function guvenliDuzenleKapat() {
-            document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'none';
-        }
-
-        function guvenliBolyeDegistir() {
-            document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'none';
-            // Mevcut konumu kullan, sadece yarıçap değiştir
-            guvenliBolyeKonum = { lat: guvenliBolyeDaire.getLatLng().lat, lng: guvenliBolyeDaire.getLatLng().lng };
-            document.getElementById('guvenli-bolge-modal').style.display = 'flex';
-        }
-
-        function guvenliBolyeKaldir() {
-            if (guvenliBolyeDaire) { harita.removeLayer(guvenliBolyeDaire); guvenliBolyeDaire = null; }
-            if (guvenliBolyeKontrolInterval) { clearInterval(guvenliBolyeKontrolInterval); guvenliBolyeKontrolInterval = null; }
-            guvenliBolyeKonum = null;
-            guvenliBolyeYaricap = 0;
-            guvenliBolyeBannerGosteriyor = false;
-            document.getElementById('guvenli-bolge-banner').style.display = 'none';
-            localStorage.removeItem('guvenli_bolge');
-        }
-
-        function guvenliBolyeKontrolBaslat() {
-            if (guvenliBolyeKontrolInterval) clearInterval(guvenliBolyeKontrolInterval);
-            guvenliBolyeKontrolInterval = setInterval(() => {
-                if (!guvenliBolyeKonum || guncelEnlem === 0) return;
-                let mesafe = mesafeHesapla(guncelEnlem, guncelBoylam, guvenliBolyeKonum.lat, guvenliBolyeKonum.lng);
-                if (mesafe > guvenliBolyeYaricap) {
-                    // Bölge dışında
-                    if (!guvenliBolyeBannerGosteriyor) {
-                        guvenliBolyeBannerGosteriyor = true;
-                        let banner = document.getElementById('guvenli-bolge-banner');
-                        document.getElementById('gb-mesafe-metin').innerText = 'Güvenli bölgenize ' + mesafe + ' metre uzaktasınız';
-                        banner.style.display = 'block';
-                    }
-                } else {
-                    // Bölge içinde
-                    if (guvenliBolyeBannerGosteriyor) {
-                        guvenliBolyeBannerGosteriyor = false;
-                        document.getElementById('guvenli-bolge-banner').style.display = 'none';
-                    }
-                }
-            }, 15000); // 15 saniyede bir kontrol
-        }
-
-        function kayitliGuvenliBolyeYukle() {
-            let kayitli = localStorage.getItem('guvenli_bolge');
-            if (kayitli && isPremium) {
-                try {
-                    let veri = JSON.parse(kayitli);
-                    guvenliBolyeKonum = { lat: veri.lat, lng: veri.lng };
-                    guvenliBolyeYaricap = veri.yaricap;
-                    guvenliBolyeDaire = L.circle([veri.lat, veri.lng], {
-                        radius: veri.yaricap,
-                        color: '#28a745', fillColor: '#28a745',
-                        fillOpacity: 0.15, weight: 2
-                    }).addTo(harita).bindPopup('🟢 Güvenli Bölge (' + (veri.yaricap >= 1000 ? veri.yaricap/1000 + ' km' : veri.yaricap + ' m') + ')<br><small>Kaldırmak için tıklayın</small>')
-                      .on('click', function() {
-                          document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'flex';
-                      });
-                    guvenliBolyeKontrolBaslat();
-                } catch(e) { localStorage.removeItem('guvenli_bolge'); }
-            }
-        }
-
         function bannerKapat() {
             document.getElementById('risk-bildirim-banner').style.display = 'none';
             if (bannerTimeout) { clearTimeout(bannerTimeout); bannerTimeout = null; }
         }
 
+        // ===== GÜVENLİ BÖLGE - POLYGON =====
+        function guvenliBolyeBaslat() {
+            if (!isPremium) { document.getElementById('premium-kilidi').style.display = 'flex'; return; }
+            // Mevcut bölge varsa seçenek sun
+            if (guvenliPolygon) {
+                if (confirm('Mevcut güvenli bölgeyi kaldırıp yeniden çizmek ister misiniz?')) {
+                    guvenliBolyeTemizle();
+                    cizimBaslat();
+                }
+            } else {
+                cizimBaslat();
+            }
+        }
+
+        function cizimBaslat() {
+            cizimModu = true;
+            cizimNoktalar = [];
+            cizimMarkerlar = [];
+            document.getElementById('cizim-toolbar').style.display = 'block';
+            document.getElementById('nokta-sayisi').innerText = '0';
+            document.getElementById('tamamla-btn').disabled = true;
+            document.getElementById('tamamla-btn').style.opacity = '0.5';
+            harita.getContainer().style.cursor = 'crosshair';
+        }
+
+        function cizimHaritaTikla(e) {
+            if (!cizimModu) return;
+            let nokta = { lat: e.latlng.lat, lng: e.latlng.lng };
+            cizimNoktalar.push(nokta);
+
+            // Yeşil nokta marker ekle
+            let m = L.circleMarker([nokta.lat, nokta.lng], {
+                radius: 7, color: '#28a745', fillColor: '#4dff88',
+                fillOpacity: 1, weight: 2
+            }).addTo(harita);
+            cizimMarkerlar.push(m);
+
+            // Önizleme çizgisi güncelle
+            if (cizimCizgi) harita.removeLayer(cizimCizgi);
+            if (cizimNoktalar.length >= 2) {
+                let latlngs = cizimNoktalar.map(n => [n.lat, n.lng]);
+                latlngs.push(latlngs[0]); // kapat
+                cizimCizgi = L.polyline(latlngs, { color: '#28a745', weight: 2, dashArray: '5,5' }).addTo(harita);
+            }
+
+            // Sayacı güncelle
+            document.getElementById('nokta-sayisi').innerText = cizimNoktalar.length;
+            if (cizimNoktalar.length >= 3) {
+                document.getElementById('tamamla-btn').disabled = false;
+                document.getElementById('tamamla-btn').style.opacity = '1';
+            }
+        }
+
+        function cizimGeriAl() {
+            if (cizimNoktalar.length === 0) return;
+            cizimNoktalar.pop();
+            let m = cizimMarkerlar.pop();
+            if (m) harita.removeLayer(m);
+            if (cizimCizgi) { harita.removeLayer(cizimCizgi); cizimCizgi = null; }
+            if (cizimNoktalar.length >= 2) {
+                let latlngs = cizimNoktalar.map(n => [n.lat, n.lng]);
+                latlngs.push(latlngs[0]);
+                cizimCizgi = L.polyline(latlngs, { color: '#28a745', weight: 2, dashArray: '5,5' }).addTo(harita);
+            }
+            document.getElementById('nokta-sayisi').innerText = cizimNoktalar.length;
+            if (cizimNoktalar.length < 3) {
+                document.getElementById('tamamla-btn').disabled = true;
+                document.getElementById('tamamla-btn').style.opacity = '0.5';
+            }
+        }
+
+        function cizimTamamla() {
+            if (cizimNoktalar.length < 3) return;
+            // Çizim elementlerini temizle
+            cizimMarkerlar.forEach(m => harita.removeLayer(m));
+            if (cizimCizgi) harita.removeLayer(cizimCizgi);
+            cizimMarkerlar = []; cizimCizgi = null;
+
+            // Polygon çiz
+            let latlngs = cizimNoktalar.map(n => [n.lat, n.lng]);
+            guvenliPolygon = L.polygon(latlngs, {
+                color: '#28a745', fillColor: '#28a745', fillOpacity: 0.15, weight: 2
+            }).addTo(harita).bindPopup('🟢 Güvenli Bölge<br><small>Kaldırmak için tıklayın</small>')
+              .on('click', function() {
+                  if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) guvenliBolyeTemizle();
+              });
+
+            // LocalStorage'a kaydet
+            localStorage.setItem('guvenli_bolge_polygon', JSON.stringify(cizimNoktalar));
+
+            // Kontrol başlat
+            guvenliBolyeKontrolBaslat();
+
+            // Çizim modundan çık
+            cizimModu = false;
+            document.getElementById('cizim-toolbar').style.display = 'none';
+            harita.getContainer().style.cursor = '';
+            alert('✅ Güvenli bölge eklendi! Bu bölgeden çıkınca uyarı alacaksınız.');
+        }
+
+        function cizimIptal() {
+            cizimMarkerlar.forEach(m => harita.removeLayer(m));
+            if (cizimCizgi) harita.removeLayer(cizimCizgi);
+            cizimMarkerlar = []; cizimCizgi = null; cizimNoktalar = [];
+            cizimModu = false;
+            document.getElementById('cizim-toolbar').style.display = 'none';
+            harita.getContainer().style.cursor = '';
+        }
+
+        function guvenliBolyeTemizle() {
+            if (guvenliPolygon) { harita.removeLayer(guvenliPolygon); guvenliPolygon = null; }
+            if (guvenliBolyeKontrolInterval) { clearInterval(guvenliBolyeKontrolInterval); guvenliBolyeKontrolInterval = null; }
+            guvenliBolyeBannerGosteriyor = false;
+            document.getElementById('guvenli-bolge-banner').style.display = 'none';
+            localStorage.removeItem('guvenli_bolge_polygon');
+            cizimNoktalar = [];
+        }
+
+        function guvenliBolyeKontrolBaslat() {
+            if (guvenliBolyeKontrolInterval) clearInterval(guvenliBolyeKontrolInterval);
+            guvenliBolyeKontrolInterval = setInterval(() => {
+                if (cizimNoktalar.length < 3 || guncelEnlem === 0) return;
+                let icinde = noktaPolygonIcindeMi(guncelEnlem, guncelBoylam, cizimNoktalar);
+                let banner = document.getElementById('guvenli-bolge-banner');
+                if (!icinde && !guvenliBolyeBannerGosteriyor) {
+                    guvenliBolyeBannerGosteriyor = true;
+                    document.getElementById('gb-mesafe-metin').innerText = 'Belirlediğiniz güvenli bölgenin dışındasınız';
+                    banner.style.display = 'block';
+                } else if (icinde && guvenliBolyeBannerGosteriyor) {
+                    guvenliBolyeBannerGosteriyor = false;
+                    banner.style.display = 'none';
+                }
+            }, 15000);
+        }
+
+        function kayitliGuvenliBolyeYukle() {
+            let kayitli = localStorage.getItem('guvenli_bolge_polygon');
+            if (kayitli && isPremium) {
+                try {
+                    cizimNoktalar = JSON.parse(kayitli);
+                    let latlngs = cizimNoktalar.map(n => [n.lat, n.lng]);
+                    guvenliPolygon = L.polygon(latlngs, {
+                        color: '#28a745', fillColor: '#28a745', fillOpacity: 0.15, weight: 2
+                    }).addTo(harita).bindPopup('🟢 Güvenli Bölge<br><small>Kaldırmak için tıklayın</small>')
+                      .on('click', function() {
+                          if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) guvenliBolyeTemizle();
+                      });
+                    guvenliBolyeKontrolBaslat();
+                } catch(e) { localStorage.removeItem('guvenli_bolge_polygon'); }
+            }
+        }
+
         // Premium kontrolü
         function premiumKontrolEt(uid) {
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
-                if (doc.exists) {
-                    isPremium = doc.data().premium === true;
-                    isAileUye = doc.data().aile_uye === true;
-                } else {
-                    isPremium = false;
-                    isAileUye = false;
-                }
+                if (doc.exists) { isPremium = doc.data().premium === true; isAileUye = doc.data().aile_uye === true; }
+                else { isPremium = false; isAileUye = false; }
                 document.getElementById('kahve-buton').style.display = isPremium ? 'none' : 'block';
-            }).catch(() => {
-                isPremium = false;
-                isAileUye = false;
-                document.getElementById('kahve-buton').style.display = 'block';
-            });
+            }).catch(() => { isPremium = false; isAileUye = false; document.getElementById('kahve-buton').style.display = 'block'; });
         }
 
-        // ===== AİLE TAKİP MODU =====
-
+        // ===== AİLE TAKİP =====
         function aileTakipAc() {
             if (isPremium) { aileModalAc(true); return; }
             if (isAileUye) { aileModalAc(false); return; }
             document.getElementById('ucretsiz-aile-ekrani').style.display = 'flex';
         }
-
         function aileModalAc(premiumMi) {
             document.getElementById('aile-panel-giris').style.display = premiumMi ? 'block' : 'none';
             document.getElementById('aile-panel-sadece-katil').style.display = premiumMi ? 'none' : 'block';
@@ -643,7 +579,6 @@
             if (kayitliKod) { aktifGrupKodu = kayitliKod; grupKodPaneliniGoster(kayitliKod); }
             document.getElementById('aile-modal').style.display = 'flex';
         }
-
         function ucretsizKatilBaslat() {
             document.getElementById('ucretsiz-aile-ekrani').style.display = 'none';
             document.getElementById('aile-panel-giris').style.display = 'none';
@@ -654,15 +589,10 @@
             document.getElementById('aile-kod-input').value = '';
             document.getElementById('aile-modal').style.display = 'flex';
         }
-
         function ucretsizEkraniKapat() { document.getElementById('ucretsiz-aile-ekrani').style.display = 'none'; }
-        function premiumBilgiGoster() {
-            document.getElementById('ucretsiz-aile-ekrani').style.display = 'none';
-            document.getElementById('premium-kilidi').style.display = 'flex';
-        }
+        function premiumBilgiGoster() { document.getElementById('ucretsiz-aile-ekrani').style.display = 'none'; document.getElementById('premium-kilidi').style.display = 'flex'; }
         function premiumKiliKapat() { document.getElementById('premium-kilidi').style.display = 'none'; }
         function aileModalKapat() { document.getElementById('aile-modal').style.display = 'none'; }
-
         function aileKatilPanelAc() {
             document.getElementById('aile-panel-giris').style.display = 'none';
             document.getElementById('aile-panel-sadece-katil').style.display = 'none';
@@ -670,67 +600,33 @@
             document.getElementById('aile-mesaj').innerText = '';
             document.getElementById('aile-kod-input').value = '';
         }
-
         function aileGeriDon() {
             document.getElementById('aile-panel-katil').style.display = 'none';
-            if (isPremium) { document.getElementById('aile-panel-giris').style.display = 'block'; }
-            else { document.getElementById('aile-panel-sadece-katil').style.display = 'block'; }
+            if (isPremium) document.getElementById('aile-panel-giris').style.display = 'block';
+            else document.getElementById('aile-panel-sadece-katil').style.display = 'block';
         }
-
         function grupOlustur() {
             if (!isPremium) { alert('Bu özellik sadece Premium üyelere açıktır.'); return; }
             let kod = 'GR-' + Math.floor(1000 + Math.random() * 9000);
-            db.collection('aile_gruplari').doc(kod).set({
-                olusturulma: firebase.firestore.FieldValue.serverTimestamp(),
-                kurucu: kullaniciUid, maxUye: 5
-            }).then(() => {
-                return db.collection('aile_gruplari').doc(kod)
-                    .collection('uyeler').doc(kullaniciUid).set({
-                        isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
-                        tarih: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-            }).then(() => {
-                aktifGrupKodu = kod;
-                localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod);
-                aileKonumGuncellemeBaslat(kod);
-                grupKodPaneliniGoster(kod);
-            }).catch(e => alert('Grup oluşturulamadı: ' + e.message));
+            db.collection('aile_gruplari').doc(kod).set({ olusturulma: firebase.firestore.FieldValue.serverTimestamp(), kurucu: kullaniciUid, maxUye: 5 })
+                .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }))
+                .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); })
+                .catch(e => alert('Grup oluşturulamadı: ' + e.message));
         }
-
         function grubaCatil() {
             let kod = document.getElementById('aile-kod-input').value.trim().toUpperCase();
             let mesajEl = document.getElementById('aile-mesaj');
-            if (!kod || kod.length < 7) {
-                mesajEl.style.color = 'red'; mesajEl.innerText = 'Geçerli bir kod girin (örn: GR-1234)'; return;
-            }
+            if (!kod || kod.length < 7) { mesajEl.style.color = 'red'; mesajEl.innerText = 'Geçerli bir kod girin (örn: GR-1234)'; return; }
             db.collection('aile_gruplari').doc(kod).get().then((doc) => {
-                if (!doc.exists) {
-                    mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup bulunamadı.'; return;
-                }
+                if (!doc.exists) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup bulunamadı.'; return; }
                 return db.collection('aile_gruplari').doc(kod).collection('uyeler').get().then((uyeler) => {
-                    if (uyeler.size >= 5) {
-                        mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return;
-                    }
-                    return db.collection('aile_gruplari').doc(kod)
-                        .collection('uyeler').doc(kullaniciUid).set({
-                            isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
-                            tarih: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            if (!isPremium) {
-                                return db.collection('kullanicilar').doc(kullaniciUid).set(
-                                    { aile_uye: true }, { merge: true }
-                                ).then(() => { isAileUye = true; });
-                            }
-                        }).then(() => {
-                            aktifGrupKodu = kod;
-                            localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod);
-                            aileKonumGuncellemeBaslat(kod);
-                            grupKodPaneliniGoster(kod);
-                        });
+                    if (uyeler.size >= 5) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return; }
+                    return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() })
+                        .then(() => { if (!isPremium) return db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: true }, { merge: true }).then(() => { isAileUye = true; }); })
+                        .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); });
                 });
             }).catch(e => { mesajEl.style.color = 'red'; mesajEl.innerText = 'Hata: ' + e.message; });
         }
-
         function grupKodPaneliniGoster(kod) {
             document.getElementById('aile-panel-giris').style.display = 'none';
             document.getElementById('aile-panel-sadece-katil').style.display = 'none';
@@ -739,446 +635,196 @@
             document.getElementById('aile-grup-kodu').innerText = kod;
             aileUyelerDinle(kod);
         }
-
         function koduKopyala() {
             let kod = document.getElementById('aile-grup-kodu').innerText;
-            navigator.clipboard.writeText(kod).then(() => { alert('Kod kopyalandı: ' + kod); })
-                .catch(() => { prompt('Kodu kopyalayın:', kod); });
+            navigator.clipboard.writeText(kod).then(() => alert('Kod kopyalandı: ' + kod)).catch(() => prompt('Kodu kopyalayın:', kod));
         }
-
         function gruptenCik() {
             if (!aktifGrupKodu) return;
-            db.collection('aile_gruplari').doc(aktifGrupKodu)
-                .collection('uyeler').doc(kullaniciUid).delete().then(() => {
-                    if (isAileUye) {
-                        db.collection('kullanicilar').doc(kullaniciUid).set(
-                            { aile_uye: false }, { merge: true }
-                        ).then(() => { isAileUye = false; });
-                    }
-                    localStorage.removeItem('aile_grup_kodu_' + kullaniciUid);
-                    if (aileKonumInterval) { clearInterval(aileKonumInterval); aileKonumInterval = null; }
-                    if (aileUyelerDinleyici) { aileUyelerDinleyici(); aileUyelerDinleyici = null; }
-                    Object.values(aileIkonlari).forEach(ikon => harita && harita.removeLayer(ikon));
-                    aileIkonlari = {}; aktifGrupKodu = null;
-                    aileModalKapat(); alert('Gruptan çıkıldı.');
-                });
+            db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').doc(kullaniciUid).delete().then(() => {
+                if (isAileUye) db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: false }, { merge: true }).then(() => { isAileUye = false; });
+                localStorage.removeItem('aile_grup_kodu_' + kullaniciUid);
+                if (aileKonumInterval) { clearInterval(aileKonumInterval); aileKonumInterval = null; }
+                if (aileUyelerDinleyici) { aileUyelerDinleyici(); aileUyelerDinleyici = null; }
+                Object.values(aileIkonlari).forEach(ikon => harita && harita.removeLayer(ikon));
+                aileIkonlari = {}; aktifGrupKodu = null;
+                aileModalKapat(); alert('Gruptan çıkıldı.');
+            });
         }
-
         function aileKonumGuncellemeBaslat(kod) {
             if (aileKonumInterval) clearInterval(aileKonumInterval);
             aileKonumInterval = setInterval(() => {
-                if (guncelEnlem !== 0 && guncelBoylam !== 0 && kod) {
-                    db.collection('aile_gruplari').doc(kod)
-                        .collection('uyeler').doc(kullaniciUid).update({
-                            enlem: guncelEnlem, boylam: guncelBoylam,
-                            tarih: firebase.firestore.FieldValue.serverTimestamp()
-                        }).catch(() => {});
-                }
+                if (guncelEnlem !== 0 && kod) db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).update({ enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
             }, 10000);
         }
-
         function aileUyelerDinle(kod) {
             if (aileUyelerDinleyici) aileUyelerDinleyici();
-            aileUyelerDinleyici = db.collection('aile_gruplari').doc(kod)
-                .collection('uyeler').onSnapshot((snapshot) => {
-                    let listEl = document.getElementById('aile-uyeler-listesi');
-                    listEl.innerHTML = '<b style="font-size:13px; color:#333;">Gruptaki Üyeler (' + snapshot.size + '/5):</b>';
-                    let i = 0;
-                    snapshot.forEach((doc) => {
-                        let uye = doc.data();
-                        let renk = uye_renkleri[i % uye_renkleri.length];
-                        let kendin = doc.id === kullaniciUid ? ' (Sen)' : '';
-                        listEl.innerHTML += `<div class="uye-satir">
-                            <div class="uye-renk" style="background:${renk}"></div>
-                            <span>${uye.isim}${kendin}</span>
-                        </div>`;
-                        if (doc.id !== kullaniciUid && uye.enlem && harita) {
-                            let aileIkon = L.divIcon({
-                                html: `<div style="background:${renk}; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`,
-                                iconSize: [14, 14], iconAnchor: [7, 7], className: ''
-                            });
-                            if (aileIkonlari[doc.id]) {
-                                aileIkonlari[doc.id].setLatLng([uye.enlem, uye.boylam]);
-                            } else {
-                                aileIkonlari[doc.id] = L.marker([uye.enlem, uye.boylam], { icon: aileIkon })
-                                    .addTo(harita).bindPopup('👨‍👩‍👧 <b>' + uye.isim + '</b>');
-                            }
-                        }
-                        i++;
-                    });
+            aileUyelerDinleyici = db.collection('aile_gruplari').doc(kod).collection('uyeler').onSnapshot((snapshot) => {
+                let listEl = document.getElementById('aile-uyeler-listesi');
+                listEl.innerHTML = '<b style="font-size:13px; color:#333;">Gruptaki Üyeler (' + snapshot.size + '/5):</b>';
+                let i = 0;
+                snapshot.forEach((doc) => {
+                    let uye = doc.data(), renk = uye_renkleri[i % uye_renkleri.length], kendin = doc.id === kullaniciUid ? ' (Sen)' : '';
+                    listEl.innerHTML += `<div class="uye-satir"><div class="uye-renk" style="background:${renk}"></div><span>${uye.isim}${kendin}</span></div>`;
+                    if (doc.id !== kullaniciUid && uye.enlem && harita) {
+                        let aileIkon = L.divIcon({ html: `<div style="background:${renk}; width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`, iconSize: [14,14], iconAnchor: [7,7], className: '' });
+                        if (aileIkonlari[doc.id]) aileIkonlari[doc.id].setLatLng([uye.enlem, uye.boylam]);
+                        else aileIkonlari[doc.id] = L.marker([uye.enlem, uye.boylam], { icon: aileIkon }).addTo(harita).bindPopup('👨‍👩‍👧 <b>' + uye.isim + '</b>');
+                    }
+                    i++;
                 });
+            });
         }
-
         function kayitliGrubaBaslan() {
             let kayitliKod = localStorage.getItem('aile_grup_kodu_' + kullaniciUid);
-            if (kayitliKod && (isPremium || isAileUye)) {
-                aktifGrupKodu = kayitliKod;
-                aileKonumGuncellemeBaslat(kayitliKod);
-                aileUyelerDinle(kayitliKod);
-            }
+            if (kayitliKod && (isPremium || isAileUye)) { aktifGrupKodu = kayitliKod; aileKonumGuncellemeBaslat(kayitliKod); aileUyelerDinle(kayitliKod); }
         }
 
         // ===== MEVCUT FONKSİYONLAR =====
-
         function sekmeGoster(sekme) {
             document.getElementById('form-giris').style.display = sekme === 'giris' ? 'block' : 'none';
             document.getElementById('form-kayit').style.display = sekme === 'kayit' ? 'block' : 'none';
-            document.querySelectorAll('.sekme-btn').forEach((btn, i) => {
-                btn.classList.toggle('aktif', (sekme === 'giris' && i === 0) || (sekme === 'kayit' && i === 1));
-            });
+            document.querySelectorAll('.sekme-btn').forEach((btn, i) => btn.classList.toggle('aktif', (sekme === 'giris' && i === 0) || (sekme === 'kayit' && i === 1)));
             document.getElementById('giris-hata').innerText = '';
         }
-
         function kayitOl() {
-            let ad = document.getElementById('kayit-ad').value.trim();
-            let email = document.getElementById('kayit-email').value.trim();
-            let sifre = document.getElementById('kayit-sifre').value;
-            let hataEl = document.getElementById('kayit-hata');
+            let ad = document.getElementById('kayit-ad').value.trim(), email = document.getElementById('kayit-email').value.trim(), sifre = document.getElementById('kayit-sifre').value, hataEl = document.getElementById('kayit-hata');
             if (!ad) { hataEl.innerText = 'Lütfen adınızı girin.'; return; }
             if (!email) { hataEl.innerText = 'Lütfen e-posta girin.'; return; }
             if (sifre.length < 6) { hataEl.innerText = 'Şifre en az 6 karakter olmalı.'; return; }
-            auth.createUserWithEmailAndPassword(email, sifre)
-                .then((userCredential) => {
-                    return userCredential.user.updateProfile({ displayName: ad })
-                        .then(() => userCredential.user.sendEmailVerification());
-                })
-                .then(() => {
-                    document.getElementById('giris-ekrani').style.display = 'none';
-                    document.getElementById('dogrulama-ekrani').style.display = 'flex';
-                })
-                .catch((error) => { hataEl.innerText = hataYazisi(error.code); });
+            auth.createUserWithEmailAndPassword(email, sifre).then((uc) => uc.user.updateProfile({ displayName: ad }).then(() => uc.user.sendEmailVerification()))
+                .then(() => { document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'flex'; })
+                .catch((e) => { hataEl.innerText = hataYazisi(e.code); });
         }
-
         function girisYap() {
-            let email = document.getElementById('giris-email').value.trim();
-            let sifre = document.getElementById('giris-sifre').value;
+            let email = document.getElementById('giris-email').value.trim(), sifre = document.getElementById('giris-sifre').value;
             if (!email || !sifre) { hataGoster('E-posta ve şifre gerekli.'); return; }
-            auth.signInWithEmailAndPassword(email, sifre)
-                .then((userCredential) => {
-                    if (!userCredential.user.emailVerified) {
-                        document.getElementById('giris-ekrani').style.display = 'none';
-                        document.getElementById('dogrulama-ekrani').style.display = 'flex';
-                    }
-                })
-                .catch((error) => { hataGoster(hataYazisi(error.code)); });
+            auth.signInWithEmailAndPassword(email, sifre).then((uc) => { if (!uc.user.emailVerified) { document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'flex'; } })
+                .catch((e) => hataGoster(hataYazisi(e.code)));
         }
-
         function dogrulamayiKontrolEt() {
             auth.currentUser.reload().then(() => {
-                if (auth.currentUser.emailVerified) {
-                    document.getElementById('dogrulama-ekrani').style.display = 'none';
-                    uygulamayiBaslat(auth.currentUser);
-                } else {
-                    let el = document.getElementById('dogrulama-mesaj');
-                    el.style.color = 'red';
-                    el.innerText = 'E-posta henüz doğrulanmamış. Lütfen gelen kutunu kontrol et.';
-                }
+                if (auth.currentUser.emailVerified) { document.getElementById('dogrulama-ekrani').style.display = 'none'; uygulamayiBaslat(auth.currentUser); }
+                else { let el = document.getElementById('dogrulama-mesaj'); el.style.color = 'red'; el.innerText = 'E-posta henüz doğrulanmamış.'; }
             });
         }
-
-        function tekrarGonder() {
-            auth.currentUser.sendEmailVerification().then(() => {
-                let el = document.getElementById('dogrulama-mesaj');
-                el.style.color = 'green';
-                el.innerText = '✅ Doğrulama e-postası tekrar gönderildi!';
-            });
-        }
-
-        function cikisYapDogrulama() { auth.signOut().then(() => { location.reload(); }); }
-
+        function tekrarGonder() { auth.currentUser.sendEmailVerification().then(() => { let el = document.getElementById('dogrulama-mesaj'); el.style.color = 'green'; el.innerText = '✅ Doğrulama e-postası tekrar gönderildi!'; }); }
+        function cikisYapDogrulama() { auth.signOut().then(() => location.reload()); }
         function sifreSifirla() {
             let email = document.getElementById('giris-email').value.trim();
             if (!email) { hataGoster('Lütfen önce e-posta adresinizi girin.'); return; }
-            auth.sendPasswordResetEmail(email)
-                .then(() => { hataGoster('✅ Şifre sıfırlama e-postası gönderildi!', 'green'); })
-                .catch((error) => { hataGoster(hataYazisi(error.code)); });
+            auth.sendPasswordResetEmail(email).then(() => hataGoster('✅ Şifre sıfırlama e-postası gönderildi!', 'green')).catch((e) => hataGoster(hataYazisi(e.code)));
         }
-
-        function hataGoster(mesaj, renk = 'red') {
-            let el = document.getElementById('giris-hata');
-            el.style.color = renk; el.innerText = mesaj;
-        }
-
+        function hataGoster(mesaj, renk = 'red') { let el = document.getElementById('giris-hata'); el.style.color = renk; el.innerText = mesaj; }
         function hataYazisi(kod) {
-            const hatalar = {
-                'auth/email-already-in-use': 'Bu e-posta zaten kayıtlı.',
-                'auth/invalid-email': 'Geçersiz e-posta adresi.',
-                'auth/weak-password': 'Şifre çok zayıf.',
-                'auth/user-not-found': 'Bu e-posta ile kayıtlı kullanıcı yok.',
-                'auth/wrong-password': 'Hatalı şifre.',
-                'auth/invalid-credential': 'E-posta veya şifre hatalı.',
-                'auth/too-many-requests': 'Çok fazla deneme. Lütfen bekleyin.'
-            };
-            return hatalar[kod] || 'Bir hata oluştu. Tekrar deneyin.';
+            const h = { 'auth/email-already-in-use':'Bu e-posta zaten kayıtlı.','auth/invalid-email':'Geçersiz e-posta adresi.','auth/weak-password':'Şifre çok zayıf.','auth/user-not-found':'Bu e-posta ile kayıtlı kullanıcı yok.','auth/wrong-password':'Hatalı şifre.','auth/invalid-credential':'E-posta veya şifre hatalı.','auth/too-many-requests':'Çok fazla deneme. Lütfen bekleyin.' };
+            return h[kod] || 'Bir hata oluştu. Tekrar deneyin.';
         }
-
-        auth.onAuthStateChanged((kullanici) => {
-            if (kullanici && kullanici.emailVerified) {
-                uygulamayiBaslat(kullanici);
-            } else if (kullanici && !kullanici.emailVerified) {
-                document.getElementById('giris-ekrani').style.display = 'none';
-                document.getElementById('dogrulama-ekrani').style.display = 'flex';
-            } else {
-                document.getElementById('giris-ekrani').style.display = 'flex';
-                document.getElementById('dogrulama-ekrani').style.display = 'none';
-            }
+        auth.onAuthStateChanged((k) => {
+            if (k && k.emailVerified) uygulamayiBaslat(k);
+            else if (k && !k.emailVerified) { document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'flex'; }
+            else { document.getElementById('giris-ekrani').style.display = 'flex'; document.getElementById('dogrulama-ekrani').style.display = 'none'; }
         });
-
         function uygulamayiBaslat(kullanici) {
-            kullaniciAdi = kullanici.displayName || kullanici.email;
-            kullaniciUid = kullanici.uid;
+            kullaniciAdi = kullanici.displayName || kullanici.email; kullaniciUid = kullanici.uid;
             localStorage.setItem('kullanici_adi', kullaniciAdi);
             try { AndroidBridge.kullaniciAdiniKaydet(kullaniciAdi); } catch(e) {}
-            document.getElementById('giris-ekrani').style.display = 'none';
-            document.getElementById('dogrulama-ekrani').style.display = 'none';
+            document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'none';
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
             document.getElementById('puan-degeri').innerText = guvenPuani;
             premiumKontrolEt(kullanici.uid);
-            if (!harita) {
-                if (navigator.geolocation) {
-                    navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
-                }
-            }
+            if (!harita && navigator.geolocation) navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
         }
 
-        let kirmiziIkon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
-        });
-        let canliMaviIkon = L.icon({
-            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
-            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-            iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
-        });
+        let kirmiziIkon = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41] });
+        let canliMaviIkon = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41] });
 
         function konumGuncelle(position) {
-            guncelEnlem = position.coords.latitude;
-            guncelBoylam = position.coords.longitude;
+            guncelEnlem = position.coords.latitude; guncelBoylam = position.coords.longitude;
             if (!harita) {
                 harita = L.map('map').setView([guncelEnlem, guncelBoylam], 16);
-                let normalHarita = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19, attribution: '© OpenStreetMap'
-                });
-                let uyduHarita = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                    maxZoom: 19, attribution: '© Esri'
-                });
+                let normalHarita = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap' });
+                let uyduHarita = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom:19, attribution:'© Esri' });
                 normalHarita.addTo(harita);
-                L.control.layers(
-                    { "🗺️ Normal": normalHarita, "🛰️ Uydu": uyduHarita },
-                    {}, { position: 'bottomleft' }
-                ).addTo(harita);
-                L.marker([guncelEnlem, guncelBoylam]).addTo(harita)
-                    .bindPopup("Şu an buradasınız (" + kullaniciAdi + ")");
+                L.control.layers({ "🗺️ Normal": normalHarita, "🛰️ Uydu": uyduHarita }, {}, { position:'bottomleft' }).addTo(harita);
+                L.marker([guncelEnlem, guncelBoylam]).addTo(harita).bindPopup("Şu an buradasınız (" + kullaniciAdi + ")");
                 riskKatmani = L.layerGroup().addTo(harita);
-                kayitliRiskleriYukle();
-                canliAcilDurumDinleyicisi();
+                kayitliRiskleriYukle(); canliAcilDurumDinleyicisi();
                 setTimeout(kayitliGrubaBaslan, 1000);
                 setTimeout(kayitliGuvenliBolyeYukle, 1500);
 
-                // Haritaya uzun basma - güvenli bölge ekle
-                harita.on('contextmenu', function(e) {
-                    // Sağ tık veya uzun bas
-                    if (!isPremium) {
-                        alert('Güvenli bölge belirleme Premium özelliğidir.');
-                        return;
-                    }
-                    guvenliBolyeKonum = { lat: e.latlng.lat, lng: e.latlng.lng };
-                    document.getElementById('guvenli-bolge-modal').style.display = 'flex';
-                });
-
-                // Mobil uzun basma (touchstart/touchend) - 1.5 saniye, hareket varsa iptal
-                let touchBasX = 0, touchBasY = 0;
-                document.getElementById('map').addEventListener('touchstart', function(e) {
-                    if (e.touches.length > 1) return; // Çift parmak zoom - iptal
-                    touchBasX = e.touches[0].clientX;
-                    touchBasY = e.touches[0].clientY;
-                    uzunBasTimeout = setTimeout(() => {
-                        if (!isPremium) {
-                            alert('Güvenli bölge belirleme Premium özelliğidir.');
-                            return;
-                        }
-                        let touch = e.touches[0];
-                        let nokta = harita.containerPointToLatLng(
-                            L.point(touch.clientX, touch.clientY)
-                        );
-                        guvenliBolyeKonum = { lat: nokta.lat, lng: nokta.lng };
-                        document.getElementById('guvenli-bolge-modal').style.display = 'flex';
-                    }, 1500);
-                }, { passive: true });
-
-                document.getElementById('map').addEventListener('touchend', function() {
-                    if (uzunBasTimeout) { clearTimeout(uzunBasTimeout); uzunBasTimeout = null; }
-                }, { passive: true });
-
-                document.getElementById('map').addEventListener('touchmove', function(e) {
-                    if (uzunBasTimeout) {
-                        // 10px den fazla hareket ettiyse iptal et
-                        let dx = Math.abs(e.touches[0].clientX - touchBasX);
-                        let dy = Math.abs(e.touches[0].clientY - touchBasY);
-                        if (dx > 10 || dy > 10) {
-                            clearTimeout(uzunBasTimeout);
-                            uzunBasTimeout = null;
-                        }
-                    }
-                }, { passive: true });
+                // Harita tıklama — çizim modunda nokta ekle
+                harita.on('click', function(e) { if (cizimModu) cizimHaritaTikla(e); });
             }
         }
-
-        function konumHatasi(error) { console.log("Konum hatası."); }
-
+        function konumHatasi() { console.log("Konum hatası."); }
         function ayarlariAc() {
             let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap / Hesap Değiştir\n\nYapmak istediğiniz işlemin numarasını yazın:");
             if (secim == "1") {
-                let mevcutNo = localStorage.getItem('acilDurumNumarasi')
-                    ? localStorage.getItem('acilDurumNumarasi').substring(2) : "";
+                let mevcutNo = localStorage.getItem('acilDurumNumarasi') ? localStorage.getItem('acilDurumNumarasi').substring(2) : "";
                 let yeniNo = prompt("Yeni acil durum numarasını başında '0' OLMADAN girin:", mevcutNo);
-                if (yeniNo && yeniNo.length >= 10) {
-                    let formatliNo = "90" + yeniNo.replace(/\D/g, '').slice(-10);
-                    localStorage.setItem('acilDurumNumarasi', formatliNo);
-                    alert("Acil durum numarası güncellendi!");
-                }
-            } else if (secim == "2") {
-                auth.signOut().then(() => { location.reload(); });
-            }
+                if (yeniNo && yeniNo.length >= 10) { localStorage.setItem('acilDurumNumarasi', "90" + yeniNo.replace(/\D/g,'').slice(-10)); alert("Acil durum numarası güncellendi!"); }
+            } else if (secim == "2") { auth.signOut().then(() => location.reload()); }
         }
-
-        document.getElementById('risk-buton').addEventListener('click', function () {
-            document.getElementById('risk-menusu').style.display = 'block';
-        });
-
+        document.getElementById('risk-buton').addEventListener('click', () => document.getElementById('risk-menusu').style.display = 'block');
         function menuyuKapat() { document.getElementById('risk-menusu').style.display = 'none'; }
-
         function riskEkle(riskTuru) {
-            let simdi = new Date().getTime();
-            const ENGEL_SURESI = 60 * 60 * 1000;
+            let simdi = new Date().getTime(), ENGEL = 60*60*1000;
             let bildirimZamanlari = JSON.parse(localStorage.getItem('risk_zaman_kayitlari')) || [];
-            bildirimZamanlari = bildirimZamanlari.filter(zaman => (simdi - zaman) < ENGEL_SURESI);
-            if (bildirimZamanlari.length >= 2) {
-                alert("Güvenlik nedeniyle son 1 saat içinde en fazla 2 farklı risk bildirebilirsiniz!");
-                puanGuncelle(-2); menuyuKapat(); return;
-            }
-            if (guncelEnlem !== 0 && guncelBoylam !== 0) {
-                db.collection("riskler").add({
-                    enlem: guncelEnlem, boylam: guncelBoylam, tur: riskTuru,
-                    dogrulama: 0, tarih: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    bildirimZamanlari.push(simdi);
-                    localStorage.setItem('risk_zaman_kayitlari', JSON.stringify(bildirimZamanlari));
-                    puanGuncelle(5); menuyuKapat();
-                    alert("Risk başarıyla ortak haritaya eklendi!");
-                });
+            bildirimZamanlari = bildirimZamanlari.filter(z => (simdi-z) < ENGEL);
+            if (bildirimZamanlari.length >= 2) { alert("Güvenlik nedeniyle son 1 saat içinde en fazla 2 farklı risk bildirebilirsiniz!"); puanGuncelle(-2); menuyuKapat(); return; }
+            if (guncelEnlem !== 0) {
+                db.collection("riskler").add({ enlem:guncelEnlem, boylam:guncelBoylam, tur:riskTuru, dogrulama:0, tarih:firebase.firestore.FieldValue.serverTimestamp() })
+                    .then(() => { bildirimZamanlari.push(simdi); localStorage.setItem('risk_zaman_kayitlari', JSON.stringify(bildirimZamanlari)); puanGuncelle(5); menuyuKapat(); alert("Risk başarıyla ortak haritaya eklendi!"); });
             }
         }
-
         function kayitliRiskleriYukle() {
             db.collection("riskler").onSnapshot((snapshot) => {
                 riskKatmani.clearLayers();
-                let simdi = new Date().getTime();
-                const YIRMI_DORT_SAAT = 24 * 60 * 60 * 1000;
-
+                let simdi = new Date().getTime(), SAAT24 = 24*60*60*1000;
                 snapshot.docChanges().forEach((change) => {
-                    // Yeni eklenen risk varsa ve ilk yükleme değilse bildir
                     if (change.type === "added" && !ilkYukleme && isPremium) {
-                        let yeniRisk = change.doc.data();
-                        if (yeniRisk.enlem && guncelEnlem !== 0) {
-                            let mesafe = mesafeHesapla(guncelEnlem, guncelBoylam, yeniRisk.enlem, yeniRisk.boylam);
-                            if (mesafe <= 500) {
-                                yakinRiskBildir(yeniRisk.tur, mesafe);
-                            }
-                        }
+                        let r = change.doc.data();
+                        if (r.enlem && guncelEnlem !== 0) { let m = mesafeHesapla(guncelEnlem, guncelBoylam, r.enlem, r.boylam); if (m <= 500) yakinRiskBildir(r.tur, m); }
                     }
                 });
-
-                // İlk yükleme tamamlandı
-                if (ilkYukleme) {
-                    setTimeout(() => { ilkYukleme = false; }, 3000);
-                }
-
+                if (ilkYukleme) setTimeout(() => { ilkYukleme = false; }, 3000);
                 snapshot.forEach((doc) => {
-                    let risk = doc.data(); let rId = doc.id;
-                    let dogrulamaSayisi = risk.dogrulama || 0;
-                    let riskZamani = risk.tarih ? risk.tarih.toDate().getTime() : simdi;
-                    if (dogrulamaSayisi < 0) { db.collection("riskler").doc(rId).delete(); return; }
-                    if ((simdi - riskZamani) > YIRMI_DORT_SAAT && dogrulamaSayisi < 10) {
-                        db.collection("riskler").doc(rId).delete(); return;
-                    }
-                    let popupIcerigi = `
-                        <div style="text-align:center; min-width: 150px;">
-                            <b>Risk:</b> ${risk.tur}<br>
-                            <small>Güven Derecesi: <b>${dogrulamaSayisi}</b></small><br>
-                            <button class="dogrula-btn" onclick="riskDogrula('${rId}')">✅ Bu risk hala var</button>
-                            <button class="dogrula-btn" style="background:#dc3545;" onclick="tehlikeYokBildir('${rId}')">❌ Tehlike geçti</button>
-                        </div>`;
-                    L.marker([risk.enlem, risk.boylam], { icon: kirmiziIkon }).addTo(riskKatmani).bindPopup(popupIcerigi);
+                    let risk = doc.data(), rId = doc.id, ds = risk.dogrulama || 0;
+                    let rz = risk.tarih ? risk.tarih.toDate().getTime() : simdi;
+                    if (ds < 0) { db.collection("riskler").doc(rId).delete(); return; }
+                    if ((simdi-rz) > SAAT24 && ds < 10) { db.collection("riskler").doc(rId).delete(); return; }
+                    let pi = `<div style="text-align:center; min-width:150px;"><b>Risk:</b> ${risk.tur}<br><small>Güven Derecesi: <b>${ds}</b></small><br><button class="dogrula-btn" onclick="riskDogrula('${rId}')">✅ Bu risk hala var</button><button class="dogrula-btn" style="background:#dc3545;" onclick="tehlikeYokBildir('${rId}')">❌ Tehlike geçti</button></div>`;
+                    L.marker([risk.enlem, risk.boylam], { icon:kirmiziIkon }).addTo(riskKatmani).bindPopup(pi);
                 });
             });
         }
+        function riskDogrula(rId) { if (localStorage.getItem('onaylandi_'+rId)) { alert("Bu riski zaten onayladınız!"); return; } db.collection("riskler").doc(rId).update({ dogrulama:firebase.firestore.FieldValue.increment(1) }).then(() => { localStorage.setItem('onaylandi_'+rId,'true'); puanGuncelle(2); }); }
+        function tehlikeYokBildir(rId) { if (localStorage.getItem('tehlike_yok_'+rId)) { alert("Zaten bildirim yaptınız!"); return; } db.collection("riskler").doc(rId).update({ dogrulama:firebase.firestore.FieldValue.increment(-1) }).then(() => { localStorage.setItem('tehlike_yok_'+rId,'true'); puanGuncelle(1); }); }
+        function puanGuncelle(deger) { guvenPuani += deger; localStorage.setItem('guvenPuani', guvenPuani); document.getElementById('puan-degeri').innerText = guvenPuani; }
 
-        function riskDogrula(rId) {
-            if (localStorage.getItem('onaylandi_' + rId)) { alert("Bu riski zaten onayladınız!"); return; }
-            db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(1) })
-                .then(() => { localStorage.setItem('onaylandi_' + rId, 'true'); puanGuncelle(2); });
-        }
-
-        function tehlikeYokBildir(rId) {
-            if (localStorage.getItem('tehlike_yok_' + rId)) { alert("Zaten bildirim yaptınız!"); return; }
-            db.collection("riskler").doc(rId).update({ dogrulama: firebase.firestore.FieldValue.increment(-1) })
-                .then(() => { localStorage.setItem('tehlike_yok_' + rId, 'true'); puanGuncelle(1); });
-        }
-
-        function puanGuncelle(deger) {
-            guvenPuani += deger;
-            localStorage.setItem('guvenPuani', guvenPuani);
-            document.getElementById('puan-degeri').innerText = guvenPuani;
-        }
-
-        document.getElementById('acil-buton').addEventListener('click', function () {
+        document.getElementById('acil-buton').addEventListener('click', function() {
             let buton = document.getElementById('acil-buton');
             if (acilTelemetriInterval) {
-                clearInterval(acilTelemetriInterval);
-                acilTelemetriInterval = null;
-                if (acilDokumanId) {
-                    db.collection("acil_durumlar").doc(acilDokumanId).update({ aktif: false })
-                        .then(() => { db.collection("acil_durumlar").doc(acilDokumanId).delete(); });
-                    acilDokumanId = null;
-                }
-                buton.style.backgroundColor = "#ff0033";
-                buton.innerText = "🚨 ACİL DURUM";
-                alert("Acil durum yayını kapatıldı. Güvendesiniz.");
-                return;
+                clearInterval(acilTelemetriInterval); acilTelemetriInterval = null;
+                if (acilDokumanId) { db.collection("acil_durumlar").doc(acilDokumanId).update({ aktif:false }).then(() => db.collection("acil_durumlar").doc(acilDokumanId).delete()); acilDokumanId = null; }
+                buton.style.backgroundColor = "#ff0033"; buton.innerText = "🚨 ACİL DURUM";
+                alert("Acil durum yayını kapatıldı. Güvendesiniz."); return;
             }
-            if (guncelEnlem !== 0 && guncelBoylam !== 0) {
+            if (guncelEnlem !== 0) {
                 let acilNumara = localStorage.getItem('acilDurumNumarasi');
                 if (!acilNumara) {
-                    let girilenNumara = prompt("🚨 Acil Durum Kişisi 🚨\n\nKonumun iletileceği numarayı başında '0' olmadan yazın:");
-                    if (girilenNumara && girilenNumara.length >= 10) {
-                        acilNumara = "90" + girilenNumara.replace(/\D/g, '').slice(-10);
-                        localStorage.setItem('acilDurumNumarasi', acilNumara);
-                    } else { alert("İptal edildi."); return; }
+                    let g = prompt("🚨 Acil Durum Kişisi 🚨\n\nKonumun iletileceği numarayı başında '0' olmadan yazın:");
+                    if (g && g.length >= 10) { acilNumara = "90" + g.replace(/\D/g,'').slice(-10); localStorage.setItem('acilDurumNumarasi', acilNumara); }
+                    else { alert("İptal edildi."); return; }
                 }
-                buton.style.backgroundColor = "#000";
-                buton.innerText = "🛑 YAYINI KAPAT";
-                db.collection("acil_durumlar").add({
-                    isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
-                    aktif: true, tarih: firebase.firestore.FieldValue.serverTimestamp()
-                }).then((docRef) => {
+                buton.style.backgroundColor = "#000"; buton.innerText = "🛑 YAYINI KAPAT";
+                db.collection("acil_durumlar").add({ isim:kullaniciAdi, enlem:guncelEnlem, boylam:guncelBoylam, aktif:true, tarih:firebase.firestore.FieldValue.serverTimestamp() }).then((docRef) => {
                     acilDokumanId = docRef.id;
-                    acilTelemetriInterval = setInterval(() => {
-                        navigator.geolocation.getCurrentPosition((pos) => {
-                            guncelEnlem = pos.coords.latitude;
-                            guncelBoylam = pos.coords.longitude;
-                            db.collection("acil_durumlar").doc(docRef.id).update({
-                                enlem: guncelEnlem, boylam: guncelBoylam,
-                                tarih: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                        }, null, { enableHighAccuracy: true });
-                    }, 4000);
+                    acilTelemetriInterval = setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { guncelEnlem = pos.coords.latitude; guncelBoylam = pos.coords.longitude; db.collection("acil_durumlar").doc(docRef.id).update({ enlem:guncelEnlem, boylam:guncelBoylam, tarih:firebase.firestore.FieldValue.serverTimestamp() }); }, null, { enableHighAccuracy:true }); }, 4000);
                     let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
-                    let googleMapsLinki = "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam;
-                    let whatsappUrl = "https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + googleMapsLinki);
+                    window.open("https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam), '_blank');
                     alert("🚨 ACİL DURUM YAYINI BAŞLADI!\nWhatsApp'a yönlendiriliyorsunuz.");
-                    window.open(whatsappUrl, '_blank');
                 });
             } else { alert("Konum bekleniyor, tekrar deneyin."); }
         });
@@ -1186,58 +832,29 @@
         let dahaOnceUyarilanlar = {};
         let acilDurumSireni = new Audio('https://actions.google.com/sounds/v1/alarms/analog_watch_alarm.ogg');
         acilDurumSireni.loop = true;
-
         function canliAcilDurumDinleyicisi() {
-            db.collection("acil_durumlar").where("aktif", "==", true).onSnapshot((snapshot) => {
+            db.collection("acil_durumlar").where("aktif","==",true).onSnapshot((snapshot) => {
                 snapshot.docChanges().forEach((change) => {
-                    let acilData = change.doc.data();
-                    let aId = change.doc.id;
-                    if (change.type === "added" && acilData.isim !== kullaniciAdi && acilData.aktif === true) {
-                        let tarih = acilData.tarih ? acilData.tarih.toDate().getTime() : 0;
-                        let saniyeFarki = (Date.now() - tarih) / 1000;
-                        if (saniyeFarki > 30) return;
+                    let ad = change.doc.data(), aId = change.doc.id;
+                    if (change.type === "added" && ad.isim !== kullaniciAdi && ad.aktif) {
+                        let tarih = ad.tarih ? ad.tarih.toDate().getTime() : 0;
+                        if ((Date.now()-tarih)/1000 > 30) return;
                         if (!dahaOnceUyarilanlar[aId]) {
                             dahaOnceUyarilanlar[aId] = true;
-                            document.getElementById('alarm-mesaj-metni').innerText =
-                                "DİKKAT: " + acilData.isim.toUpperCase() + " acil durum çağrısı yaptı!";
+                            document.getElementById('alarm-mesaj-metni').innerText = "DİKKAT: " + ad.isim.toUpperCase() + " acil durum çağrısı yaptı!";
                             document.getElementById('acil-alarm-ekrani').style.display = "flex";
-                            acilDurumSireni.play().catch(e => console.log("Siren hatası:", e));
+                            acilDurumSireni.play().catch(() => {});
                         }
-                        if (canliTakipIkonlari[aId]) {
-                            canliTakipIkonlari[aId].setLatLng([acilData.enlem, acilData.boylam]);
-                        } else {
-                            canliTakipIkonlari[aId] = L.marker([acilData.enlem, acilData.boylam], { icon: canliMaviIkon })
-                                .addTo(harita).bindPopup("⚠️ <b>" + acilData.isim + " (CANLI TAKİP)</b>").openPopup();
-                        }
-                        document.getElementById('takip-baslat-btn').onclick = function () {
-                            harita.setView([acilData.enlem, acilData.boylam], 18);
-                            canliTakipIkonlari[aId].openPopup();
-                            document.getElementById('acil-alarm-ekrani').style.display = "none";
-                        };
+                        if (canliTakipIkonlari[aId]) canliTakipIkonlari[aId].setLatLng([ad.enlem, ad.boylam]);
+                        else canliTakipIkonlari[aId] = L.marker([ad.enlem, ad.boylam], { icon:canliMaviIkon }).addTo(harita).bindPopup("⚠️ <b>" + ad.isim + " (CANLI TAKİP)</b>").openPopup();
+                        document.getElementById('takip-baslat-btn').onclick = function() { harita.setView([ad.enlem,ad.boylam],18); canliTakipIkonlari[aId].openPopup(); document.getElementById('acil-alarm-ekrani').style.display="none"; };
                     }
-                    if (change.type === "modified" && acilData.isim !== kullaniciAdi) {
-                        if (canliTakipIkonlari[aId]) {
-                            canliTakipIkonlari[aId].setLatLng([acilData.enlem, acilData.boylam]);
-                        }
-                    }
-                    if (change.type === "removed") {
-                        if (canliTakipIkonlari[aId]) {
-                            harita.removeLayer(canliTakipIkonlari[aId]);
-                            delete canliTakipIkonlari[aId];
-                            delete dahaOnceUyarilanlar[aId];
-                            alert("Tehlike durumu sona erdi. Kişi güvende.");
-                            alarmKapat();
-                        }
-                    }
+                    if (change.type === "modified" && ad.isim !== kullaniciAdi && canliTakipIkonlari[aId]) canliTakipIkonlari[aId].setLatLng([ad.enlem, ad.boylam]);
+                    if (change.type === "removed" && canliTakipIkonlari[aId]) { harita.removeLayer(canliTakipIkonlari[aId]); delete canliTakipIkonlari[aId]; delete dahaOnceUyarilanlar[aId]; alert("Tehlike durumu sona erdi. Kişi güvende."); alarmKapat(); }
                 });
             });
         }
-
-        function alarmKapat() {
-            document.getElementById('acil-alarm-ekrani').style.display = "none";
-            acilDurumSireni.pause();
-            acilDurumSireni.currentTime = 0;
-        }
+        function alarmKapat() { document.getElementById('acil-alarm-ekrani').style.display="none"; acilDurumSireni.pause(); acilDurumSireni.currentTime=0; }
     </script>
 </body>
 </html>
