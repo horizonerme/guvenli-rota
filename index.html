@@ -961,10 +961,12 @@
                     document.getElementById('guvenli-bolge-modal').style.display = 'flex';
                 });
 
-                // Mobil uzun basma (touchstart/touchend)
-                let touchBaslangic = null;
+                // Mobil uzun basma (touchstart/touchend) - 1.5 saniye, hareket varsa iptal
+                let touchBasX = 0, touchBasY = 0;
                 document.getElementById('map').addEventListener('touchstart', function(e) {
-                    touchBaslangic = Date.now();
+                    if (e.touches.length > 1) return; // Çift parmak zoom - iptal
+                    touchBasX = e.touches[0].clientX;
+                    touchBasY = e.touches[0].clientY;
                     uzunBasTimeout = setTimeout(() => {
                         if (!isPremium) {
                             alert('Güvenli bölge belirleme Premium özelliğidir.');
@@ -976,15 +978,23 @@
                         );
                         guvenliBolyeKonum = { lat: nokta.lat, lng: nokta.lng };
                         document.getElementById('guvenli-bolge-modal').style.display = 'flex';
-                    }, 600);
+                    }, 1500);
                 }, { passive: true });
 
                 document.getElementById('map').addEventListener('touchend', function() {
                     if (uzunBasTimeout) { clearTimeout(uzunBasTimeout); uzunBasTimeout = null; }
                 }, { passive: true });
 
-                document.getElementById('map').addEventListener('touchmove', function() {
-                    if (uzunBasTimeout) { clearTimeout(uzunBasTimeout); uzunBasTimeout = null; }
+                document.getElementById('map').addEventListener('touchmove', function(e) {
+                    if (uzunBasTimeout) {
+                        // 10px den fazla hareket ettiyse iptal et
+                        let dx = Math.abs(e.touches[0].clientX - touchBasX);
+                        let dy = Math.abs(e.touches[0].clientY - touchBasY);
+                        if (dx > 10 || dy > 10) {
+                            clearTimeout(uzunBasTimeout);
+                            uzunBasTimeout = null;
+                        }
+                    }
                 }, { passive: true });
             }
         }
