@@ -800,71 +800,75 @@
         });
 
         let dahaOnceUyarilanlar = {}, canliTakipIkonlari2 = {};
-        // Web Audio API - acil siren
+        // Web Audio API - tek ses sistemi
         let audioCtx = null;
-        let sirenOscillator = null;
-        let sirenGain = null;
         let sirenCalisiyor = false;
-        let sirenAnimFrame = null;
+        let sirenTimeout = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function bipSesi(frekans, sure, gecikme, ctx, gain) {
+            let osc = ctx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = frekans;
+            osc.connect(gain);
+            osc.start(ctx.currentTime + gecikme);
+            osc.stop(ctx.currentTime + gecikme + sure);
+        }
 
         function sirenBaslat() {
             if (sirenCalisiyor) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                sirenCalisiyor = true;
-
-                sirenGain = audioCtx.createGain();
-                sirenGain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-                sirenGain.connect(audioCtx.destination);
-
-                sirenOscillator = audioCtx.createOscillator();
-                sirenOscillator.type = 'sine';
-                sirenOscillator.connect(sirenGain);
-                sirenOscillator.start();
-
-                // Klasik ambulans sireni: 770Hz → 960Hz tekrarlı
-                let baslangic = audioCtx.currentTime;
-                function sirenDalga() {
-                    if (!sirenCalisiyor || !sirenOscillator) return;
-                    let t = audioCtx.currentTime;
-                    sirenOscillator.frequency.cancelScheduledValues(t);
-                    // Alaşağı: 960 → 770 Hz (0.5s) → 770 → 960 Hz (0.5s)
-                    sirenOscillator.frequency.setValueAtTime(960, t);
-                    sirenOscillator.frequency.linearRampToValueAtTime(770, t + 0.5);
-                    sirenOscillator.frequency.linearRampToValueAtTime(960, t + 1.0);
-                    setTimeout(sirenDalga, 950);
-                }
-                sirenDalga();
-            } catch(e) { console.log('Siren hatası:', e); }
+            sirenCalisiyor = true;
+            function calSiren() {
+                if (!sirenCalisiyor) return;
+                try {
+                    let ctx = getAudioCtx();
+                    let gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+                    gain.connect(ctx.destination);
+                    // 960Hz → 770Hz → 960Hz (1 döngü = 1 saniye)
+                    let osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(960, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(770, ctx.currentTime + 0.5);
+                    osc.frequency.linearRampToValueAtTime(960, ctx.currentTime + 1.0);
+                    osc.connect(gain);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 1.0);
+                } catch(e) {}
+                sirenTimeout = setTimeout(calSiren, 1000);
+            }
+            calSiren();
         }
 
         function sirenDurdur() {
             sirenCalisiyor = false;
-            try {
-                if (sirenOscillator) { sirenOscillator.stop(); sirenOscillator.disconnect(); sirenOscillator = null; }
-                if (sirenGain) { sirenGain.disconnect(); sirenGain = null; }
-            } catch(e) {}
+            if (sirenTimeout) { clearTimeout(sirenTimeout); sirenTimeout = null; }
         }
 
-        // Güvenli bölge için daha kısa uyarı sesi
+        // Güvenli bölge uyarı sesi - sadece siren çalmıyorsa
         function guvenliBolyeUyariSesi() {
+            if (sirenCalisiyor) return; // Siren çalıyorsa karıştırma
             try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                let gain = audioCtx.createGain();
-                gain.connect(audioCtx.destination);
-                // 3 kısa bip
-                [0, 0.35, 0.7].forEach((gecikme) => {
-                    let osc = audioCtx.createOscillator();
+                let ctx = getAudioCtx();
+                let gain = ctx.createGain();
+                gain.connect(ctx.destination);
+                // 3 kısa yükselen bip: uyarı tonu
+                [[0, 660], [0.3, 780], [0.6, 960]].forEach(([gecikme, frek]) => {
+                    let osc = ctx.createOscillator();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + gecikme);
-                    gain.gain.setValueAtTime(0, audioCtx.currentTime + gecikme);
-                    gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + gecikme + 0.05);
-                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + gecikme + 0.25);
-                    osc.connect(gain);
-                    osc.start(audioCtx.currentTime + gecikme);
-                    osc.stop(audioCtx.currentTime + gecikme + 0.3);
+                    osc.frequency.setValueAtTime(frek, ctx.currentTime + gecikme);
+                    let g = ctx.createGain();
+                    g.gain.setValueAtTime(0, ctx.currentTime + gecikme);
+                    g.gain.linearRampToValueAtTime(0.35, ctx.currentTime + gecikme + 0.04);
+                    g.gain.linearRampToValueAtTime(0, ctx.currentTime + gecikme + 0.22);
+                    osc.connect(g); g.connect(ctx.destination);
+                    osc.start(ctx.currentTime + gecikme);
+                    osc.stop(ctx.currentTime + gecikme + 0.25);
                 });
             } catch(e) {}
         }
