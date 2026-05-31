@@ -581,7 +581,7 @@
             let kod = 'GR-' + Math.floor(1000 + Math.random() * 9000);
             db.collection('aile_gruplari').doc(kod).set({ olusturulma: firebase.firestore.FieldValue.serverTimestamp(), kurucu: kullaniciUid, maxUye: 5 })
                 .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }))
-                .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); })
+                .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); })
                 .catch(e => alert('Grup oluşturulamadı: ' + e.message));
         }
         function grubaCatil() {
@@ -594,7 +594,7 @@
                     if (uyeler.size >= 5) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return; }
                     return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() })
                         .then(() => { if (!isPremium) return db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: true }, { merge: true }).then(() => { isAileUye = true; }); })
-                        .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); });
+                        .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); });
                 });
             }).catch(e => { mesajEl.style.color = 'red'; mesajEl.innerText = 'Hata: ' + e.message; });
         }
@@ -619,6 +619,7 @@
                 if (aileUyelerDinleyici) { aileUyelerDinleyici(); aileUyelerDinleyici = null; }
                 Object.values(aileIkonlari).forEach(ikon => harita && harita.removeLayer(ikon));
                 aileIkonlari = {}; aktifGrupKodu = null;
+                try { AndroidBridge.grupKodunuSil(); } catch(e) {}
                 aileModalKapat(); alert('Gruptan çıkıldı.');
             });
         }
