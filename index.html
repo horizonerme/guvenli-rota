@@ -141,6 +141,12 @@
         .gb-secim-btn:active { background: #28a745; color: white; }
         .gb-secim-btn.secili { background: #28a745; color: white; }
 
+        #guvenli-bolge-duzenle-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.6); z-index: 10000;
+            justify-content: center; align-items: center;
+        }
+
         /* YAKIN RİSK BİLDİRİM BANNER */
         #risk-bildirim-banner {
             display: none;
@@ -268,7 +274,7 @@
         <div class="gb-alt" id="gb-mesafe-metin"></div>
     </div>
 
-    <!-- GÜVENLİ BÖLGE MODAL -->
+    <!-- GÜVENLİ BÖLGE EKLE MODAL -->
     <div id="guvenli-bolge-modal">
         <div id="guvenli-bolge-kutu">
             <h3>🟢 Güvenli Bölge Belirle</h3>
@@ -277,6 +283,17 @@
             <button class="gb-secim-btn" onclick="guvenliBolyeEkle(500)">📍 500 metre</button>
             <button class="gb-secim-btn" onclick="guvenliBolyeEkle(1000)">📍 1 kilometre</button>
             <button class="aile-btn" style="background:#ccc; color:#333; margin-top:8px;" onclick="guvenliModalKapat()">İptal</button>
+        </div>
+    </div>
+
+    <!-- GÜVENLİ BÖLGE DÜZENLE MODAL -->
+    <div id="guvenli-bolge-duzenle-modal">
+        <div id="guvenli-bolge-kutu">
+            <h3>🟢 Güvenli Bölge</h3>
+            <p>Ne yapmak istiyorsunuz?</p>
+            <button class="gb-secim-btn" onclick="guvenliBolyeDegistir()">🔄 Yarıçapı Değiştir</button>
+            <button class="aile-btn" style="background:#dc3545; color:white; margin-top:5px;" onclick="guvenliBolyeKaldir()">🗑️ Güvenli Bölgeyi Kaldır</button>
+            <button class="aile-btn" style="background:#ccc; color:#333; margin-top:5px;" onclick="guvenliDuzenleKapat()">İptal</button>
         </div>
     </div>
 
@@ -522,6 +539,17 @@
             alert('✅ Güvenli bölge eklendi! Bu bölgeden çıkınca uyarı alacaksınız.');
         }
 
+        function guvenliDuzenleKapat() {
+            document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'none';
+        }
+
+        function guvenliBolyeDegistir() {
+            document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'none';
+            // Mevcut konumu kullan, sadece yarıçap değiştir
+            guvenliBolyeKonum = { lat: guvenliBolyeDaire.getLatLng().lat, lng: guvenliBolyeDaire.getLatLng().lng };
+            document.getElementById('guvenli-bolge-modal').style.display = 'flex';
+        }
+
         function guvenliBolyeKaldir() {
             if (guvenliBolyeDaire) { harita.removeLayer(guvenliBolyeDaire); guvenliBolyeDaire = null; }
             if (guvenliBolyeKontrolInterval) { clearInterval(guvenliBolyeKontrolInterval); guvenliBolyeKontrolInterval = null; }
@@ -568,9 +596,7 @@
                         fillOpacity: 0.15, weight: 2
                     }).addTo(harita).bindPopup('🟢 Güvenli Bölge (' + (veri.yaricap >= 1000 ? veri.yaricap/1000 + ' km' : veri.yaricap + ' m') + ')<br><small>Kaldırmak için tıklayın</small>')
                       .on('click', function() {
-                          if (confirm('Güvenli bölgeyi kaldırmak istiyor musunuz?')) {
-                              guvenliBolyeKaldir();
-                          }
+                          document.getElementById('guvenli-bolge-duzenle-modal').style.display = 'flex';
                       });
                     guvenliBolyeKontrolBaslat();
                 } catch(e) { localStorage.removeItem('guvenli_bolge'); }
