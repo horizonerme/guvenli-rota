@@ -828,21 +828,24 @@
                 if (!sirenCalisiyor) return;
                 try {
                     let ctx = getAudioCtx();
-                    // Yumuşak siren: triangle dalga + düşük gain + yavaş sweep
-                    let osc = ctx.createOscillator();
-                    let gain = ctx.createGain();
-                    osc.type = 'triangle'; // sine'den yumuşak
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    gain.gain.setValueAtTime(0.18, ctx.currentTime); // daha sessiz
-                    // Yavaş sweep: 620Hz → 820Hz → 620Hz (1.6s)
-                    osc.frequency.setValueAtTime(620, ctx.currentTime);
-                    osc.frequency.linearRampToValueAtTime(820, ctx.currentTime + 0.8);
-                    osc.frequency.linearRampToValueAtTime(620, ctx.currentTime + 1.6);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 1.6);
+                    // Çift ton alarm: yüksek + alçak ton (BEEP-BEEP stili)
+                    let t = ctx.currentTime;
+                    [[0, 1047, 0.22], [0.28, 784, 0.22]].forEach(([gecikme, frek, sure]) => {
+                        let osc = ctx.createOscillator();
+                        let gain = ctx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.value = frek;
+                        gain.gain.setValueAtTime(0, t + gecikme);
+                        gain.gain.linearRampToValueAtTime(0.25, t + gecikme + 0.02);
+                        gain.gain.setValueAtTime(0.25, t + gecikme + sure - 0.03);
+                        gain.gain.linearRampToValueAtTime(0, t + gecikme + sure);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(t + gecikme);
+                        osc.stop(t + gecikme + sure);
+                    });
                 } catch(e) {}
-                sirenTimeout = setTimeout(calSiren, 1600);
+                sirenTimeout = setTimeout(calSiren, 700);
             }
             calSiren();
         }
