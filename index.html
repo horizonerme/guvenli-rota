@@ -102,6 +102,35 @@
             z-index: 999; cursor: pointer; white-space: nowrap;
         }
 
+        /* YAKIN RİSK BİLDİRİM BANNER */
+        #risk-bildirim-banner {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white; padding: 12px 16px;
+            z-index: 99997; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        #risk-bildirim-banner .banner-icerik {
+            display: flex; align-items: center; justify-content: space-between;
+            max-width: 500px; margin: 0 auto;
+        }
+        #risk-bildirim-banner .banner-metin {
+            font-size: 14px; font-weight: bold; flex: 1;
+        }
+        #risk-bildirim-banner .banner-kapat {
+            background: rgba(255,255,255,0.3); border: none; color: white;
+            font-size: 18px; width: 28px; height: 28px; border-radius: 50%;
+            cursor: pointer; margin-left: 10px; line-height: 28px; text-align: center;
+        }
+        #risk-bildirim-banner .banner-mesafe {
+            font-size: 12px; opacity: 0.9; margin-top: 2px;
+        }
+
         /* AİLE TAKİP MODALI */
         #aile-modal {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -137,7 +166,6 @@
         }
         .uye-renk { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
 
-        /* ÜCRETSIZ KİLİT - Aile üyesi katılım seçeneği sunar */
         #ucretsiz-aile-ekrani {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.7); z-index: 10001;
@@ -150,7 +178,6 @@
         #ucretsiz-aile-kutu h3 { color: #1a1a2e; font-size: 18px; margin: 0 0 8px 0; }
         #ucretsiz-aile-kutu p { color: #666; font-size: 13px; line-height: 1.5; margin: 0 0 15px 0; }
 
-        /* PREMIUM KİLİT - Sadece grup kurma için */
         #premium-kilidi {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: rgba(0,0,0,0.7); z-index: 10001;
@@ -195,6 +222,17 @@
     </style>
 </head>
 <body>
+
+    <!-- YAKIN RİSK BİLDİRİM BANNER -->
+    <div id="risk-bildirim-banner">
+        <div class="banner-icerik">
+            <div>
+                <div class="banner-metin">⚠️ <span id="banner-tur-metin">Yakınınızda risk!</span></div>
+                <div class="banner-mesafe" id="banner-mesafe-metin"></div>
+            </div>
+            <button class="banner-kapat" onclick="bannerKapat()">✕</button>
+        </div>
+    </div>
 
     <div id="giris-ekrani">
         <div id="giris-kutusu">
@@ -249,19 +287,16 @@
         <div id="aile-kutu">
             <h3>👨‍👩‍👧 Aile Takip Modu</h3>
             <p>Aile üyelerinizin konumunu haritada canlı görün</p>
-            <!-- Premium: Grup kur + katıl -->
             <div id="aile-panel-giris">
                 <button class="aile-btn" style="background:#6f42c1; color:white;" onclick="grupOlustur()">➕ Yeni Grup Oluştur</button>
                 <button class="aile-btn" style="background:#0f3460; color:white;" onclick="aileKatilPanelAc()">🔑 Gruba Katıl</button>
                 <button class="aile-btn" style="background:#ccc; color:#333;" onclick="aileModalKapat()">İptal</button>
             </div>
-            <!-- Sadece katılma paneli (ücretsiz aile üyesi için) -->
             <div id="aile-panel-sadece-katil" style="display:none;">
                 <p style="color:#555; font-size:13px;">Bir aile grubuna katılmak için size verilen kodu girin.</p>
                 <button class="aile-btn" style="background:#0f3460; color:white;" onclick="aileKatilPanelAc()">🔑 Gruba Katıl</button>
                 <button class="aile-btn" style="background:#ccc; color:#333;" onclick="aileModalKapat()">İptal</button>
             </div>
-            <!-- Grup kodu paneli -->
             <div id="aile-panel-kod" style="display:none;">
                 <p style="color:#333; font-size:14px;">Grup kodunuzu aile üyeleriyle paylaşın:</p>
                 <div id="aile-grup-kodu"></div>
@@ -270,7 +305,6 @@
                 <button class="aile-btn" style="background:#dc3545; color:white;" onclick="gruptenCik()">🚪 Gruptan Çık</button>
                 <button class="aile-btn" style="background:#ccc; color:#333;" onclick="aileModalKapat()">Kapat</button>
             </div>
-            <!-- Kod girme paneli -->
             <div id="aile-panel-katil" style="display:none;">
                 <p style="color:#333; font-size:14px;">Grup kodunu girin:</p>
                 <input type="text" id="aile-kod-input" placeholder="GR-0000" maxlength="7" oninput="this.value=this.value.toUpperCase()" />
@@ -281,7 +315,6 @@
         </div>
     </div>
 
-    <!-- ÜCRETSİZ KULLANICI - Aile üyesi seçeneği -->
     <div id="ucretsiz-aile-ekrani">
         <div id="ucretsiz-aile-kutu">
             <h3>👨‍👩‍👧 Aile Takip</h3>
@@ -292,7 +325,6 @@
         </div>
     </div>
 
-    <!-- PREMİUM BİLGİ -->
     <div id="premium-kilidi">
         <div id="premium-kutu">
             <h3>⭐ Premium Özellik</h3>
@@ -343,7 +375,9 @@
         let acilDokumanId = null;
         let guvenPuani = 50;
         let isPremium = false;
-        let isAileUye = false; // Gruba ücretsiz katılmış kullanıcı
+        let isAileUye = false;
+        let bannerTimeout = null;
+        let ilkYukleme = true; // İlk yüklemede mevcut riskleri bildirme
 
         // Aile takip değişkenleri
         let aktifGrupKodu = null;
@@ -358,7 +392,35 @@
             window.location.href = intentUrl;
         }
 
-        // Premium ve aile üyesi kontrolü
+        // ===== YAKIN RİSK BİLDİRİM SİSTEMİ =====
+
+        // İki nokta arası mesafe (metre)
+        function mesafeHesapla(lat1, lon1, lat2, lon2) {
+            const R = 6371000;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+        }
+
+        function yakinRiskBildir(riskTuru, mesafe) {
+            if (!isPremium) return;
+            let banner = document.getElementById('risk-bildirim-banner');
+            document.getElementById('banner-tur-metin').innerText = riskTuru + ' bildirildi!';
+            document.getElementById('banner-mesafe-metin').innerText = '📍 Yaklaşık ' + mesafe + ' metre uzağınızda';
+            banner.style.display = 'block';
+            if (bannerTimeout) clearTimeout(bannerTimeout);
+            bannerTimeout = setTimeout(() => { bannerKapat(); }, 6000);
+        }
+
+        function bannerKapat() {
+            document.getElementById('risk-bildirim-banner').style.display = 'none';
+            if (bannerTimeout) { clearTimeout(bannerTimeout); bannerTimeout = null; }
+        }
+
+        // Premium kontrolü
         function premiumKontrolEt(uid) {
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
                 if (doc.exists) {
@@ -379,17 +441,8 @@
         // ===== AİLE TAKİP MODU =====
 
         function aileTakipAc() {
-            // Premium → tam erişim
-            if (isPremium) {
-                aileModalAc(true);
-                return;
-            }
-            // Aile üyesi → sadece grubunu görebilir
-            if (isAileUye) {
-                aileModalAc(false);
-                return;
-            }
-            // Ücretsiz → seçenek sun
+            if (isPremium) { aileModalAc(true); return; }
+            if (isAileUye) { aileModalAc(false); return; }
             document.getElementById('ucretsiz-aile-ekrani').style.display = 'flex';
         }
 
@@ -398,19 +451,13 @@
             document.getElementById('aile-panel-sadece-katil').style.display = premiumMi ? 'none' : 'block';
             document.getElementById('aile-panel-kod').style.display = 'none';
             document.getElementById('aile-panel-katil').style.display = 'none';
-
-            // Zaten bir grupta mısın?
             let kayitliKod = localStorage.getItem('aile_grup_kodu_' + kullaniciUid);
-            if (kayitliKod) {
-                aktifGrupKodu = kayitliKod;
-                grupKodPaneliniGoster(kayitliKod);
-            }
+            if (kayitliKod) { aktifGrupKodu = kayitliKod; grupKodPaneliniGoster(kayitliKod); }
             document.getElementById('aile-modal').style.display = 'flex';
         }
 
         function ucretsizKatilBaslat() {
             document.getElementById('ucretsiz-aile-ekrani').style.display = 'none';
-            // Direkt katılma panelini aç
             document.getElementById('aile-panel-giris').style.display = 'none';
             document.getElementById('aile-panel-sadece-katil').style.display = 'none';
             document.getElementById('aile-panel-kod').style.display = 'none';
@@ -420,22 +467,13 @@
             document.getElementById('aile-modal').style.display = 'flex';
         }
 
-        function ucretsizEkraniKapat() {
-            document.getElementById('ucretsiz-aile-ekrani').style.display = 'none';
-        }
-
+        function ucretsizEkraniKapat() { document.getElementById('ucretsiz-aile-ekrani').style.display = 'none'; }
         function premiumBilgiGoster() {
             document.getElementById('ucretsiz-aile-ekrani').style.display = 'none';
             document.getElementById('premium-kilidi').style.display = 'flex';
         }
-
-        function premiumKiliKapat() {
-            document.getElementById('premium-kilidi').style.display = 'none';
-        }
-
-        function aileModalKapat() {
-            document.getElementById('aile-modal').style.display = 'none';
-        }
+        function premiumKiliKapat() { document.getElementById('premium-kilidi').style.display = 'none'; }
+        function aileModalKapat() { document.getElementById('aile-modal').style.display = 'none'; }
 
         function aileKatilPanelAc() {
             document.getElementById('aile-panel-giris').style.display = 'none';
@@ -447,11 +485,8 @@
 
         function aileGeriDon() {
             document.getElementById('aile-panel-katil').style.display = 'none';
-            if (isPremium) {
-                document.getElementById('aile-panel-giris').style.display = 'block';
-            } else {
-                document.getElementById('aile-panel-sadece-katil').style.display = 'block';
-            }
+            if (isPremium) { document.getElementById('aile-panel-giris').style.display = 'block'; }
+            else { document.getElementById('aile-panel-sadece-katil').style.display = 'block'; }
         }
 
         function grupOlustur() {
@@ -459,14 +494,11 @@
             let kod = 'GR-' + Math.floor(1000 + Math.random() * 9000);
             db.collection('aile_gruplari').doc(kod).set({
                 olusturulma: firebase.firestore.FieldValue.serverTimestamp(),
-                kurucu: kullaniciUid,
-                maxUye: 5
+                kurucu: kullaniciUid, maxUye: 5
             }).then(() => {
                 return db.collection('aile_gruplari').doc(kod)
                     .collection('uyeler').doc(kullaniciUid).set({
-                        isim: kullaniciAdi,
-                        enlem: guncelEnlem,
-                        boylam: guncelBoylam,
+                        isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
                         tarih: firebase.firestore.FieldValue.serverTimestamp()
                     });
             }).then(() => {
@@ -481,48 +513,34 @@
             let kod = document.getElementById('aile-kod-input').value.trim().toUpperCase();
             let mesajEl = document.getElementById('aile-mesaj');
             if (!kod || kod.length < 7) {
-                mesajEl.style.color = 'red';
-                mesajEl.innerText = 'Geçerli bir kod girin (örn: GR-1234)';
-                return;
+                mesajEl.style.color = 'red'; mesajEl.innerText = 'Geçerli bir kod girin (örn: GR-1234)'; return;
             }
             db.collection('aile_gruplari').doc(kod).get().then((doc) => {
                 if (!doc.exists) {
-                    mesajEl.style.color = 'red';
-                    mesajEl.innerText = '❌ Grup bulunamadı. Kodu kontrol edin.';
-                    return;
+                    mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup bulunamadı.'; return;
                 }
-                // Max 5 kişi kontrolü
-                return db.collection('aile_gruplari').doc(kod)
-                    .collection('uyeler').get().then((uyeler) => {
-                        if (uyeler.size >= 5) {
-                            mesajEl.style.color = 'red';
-                            mesajEl.innerText = '❌ Bu grup maksimum 5 kişiye ulaştı.';
-                            return;
-                        }
-                        return db.collection('aile_gruplari').doc(kod)
-                            .collection('uyeler').doc(kullaniciUid).set({
-                                isim: kullaniciAdi,
-                                enlem: guncelEnlem,
-                                boylam: guncelBoylam,
-                                tarih: firebase.firestore.FieldValue.serverTimestamp()
-                            }).then(() => {
-                                // Ücretsiz kullanıcıysa aile_uye: true yaz
-                                if (!isPremium) {
-                                    return db.collection('kullanicilar').doc(kullaniciUid).set(
-                                        { aile_uye: true }, { merge: true }
-                                    ).then(() => { isAileUye = true; });
-                                }
-                            }).then(() => {
-                                aktifGrupKodu = kod;
-                                localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod);
-                                aileKonumGuncellemeBaslat(kod);
-                                grupKodPaneliniGoster(kod);
-                            });
-                    });
-            }).catch(e => {
-                mesajEl.style.color = 'red';
-                mesajEl.innerText = 'Hata: ' + e.message;
-            });
+                return db.collection('aile_gruplari').doc(kod).collection('uyeler').get().then((uyeler) => {
+                    if (uyeler.size >= 5) {
+                        mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return;
+                    }
+                    return db.collection('aile_gruplari').doc(kod)
+                        .collection('uyeler').doc(kullaniciUid).set({
+                            isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam,
+                            tarih: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            if (!isPremium) {
+                                return db.collection('kullanicilar').doc(kullaniciUid).set(
+                                    { aile_uye: true }, { merge: true }
+                                ).then(() => { isAileUye = true; });
+                            }
+                        }).then(() => {
+                            aktifGrupKodu = kod;
+                            localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod);
+                            aileKonumGuncellemeBaslat(kod);
+                            grupKodPaneliniGoster(kod);
+                        });
+                });
+            }).catch(e => { mesajEl.style.color = 'red'; mesajEl.innerText = 'Hata: ' + e.message; });
         }
 
         function grupKodPaneliniGoster(kod) {
@@ -536,18 +554,14 @@
 
         function koduKopyala() {
             let kod = document.getElementById('aile-grup-kodu').innerText;
-            navigator.clipboard.writeText(kod).then(() => {
-                alert('Kod kopyalandı: ' + kod);
-            }).catch(() => {
-                prompt('Kodu kopyalayın:', kod);
-            });
+            navigator.clipboard.writeText(kod).then(() => { alert('Kod kopyalandı: ' + kod); })
+                .catch(() => { prompt('Kodu kopyalayın:', kod); });
         }
 
         function gruptenCik() {
             if (!aktifGrupKodu) return;
             db.collection('aile_gruplari').doc(aktifGrupKodu)
                 .collection('uyeler').doc(kullaniciUid).delete().then(() => {
-                    // Aile üyesiyse aile_uye: false yap
                     if (isAileUye) {
                         db.collection('kullanicilar').doc(kullaniciUid).set(
                             { aile_uye: false }, { merge: true }
@@ -557,10 +571,8 @@
                     if (aileKonumInterval) { clearInterval(aileKonumInterval); aileKonumInterval = null; }
                     if (aileUyelerDinleyici) { aileUyelerDinleyici(); aileUyelerDinleyici = null; }
                     Object.values(aileIkonlari).forEach(ikon => harita && harita.removeLayer(ikon));
-                    aileIkonlari = {};
-                    aktifGrupKodu = null;
-                    aileModalKapat();
-                    alert('Gruptan çıkıldı.');
+                    aileIkonlari = {}; aktifGrupKodu = null;
+                    aileModalKapat(); alert('Gruptan çıkıldı.');
                 });
         }
 
@@ -570,8 +582,7 @@
                 if (guncelEnlem !== 0 && guncelBoylam !== 0 && kod) {
                     db.collection('aile_gruplari').doc(kod)
                         .collection('uyeler').doc(kullaniciUid).update({
-                            enlem: guncelEnlem,
-                            boylam: guncelBoylam,
+                            enlem: guncelEnlem, boylam: guncelBoylam,
                             tarih: firebase.firestore.FieldValue.serverTimestamp()
                         }).catch(() => {});
                 }
@@ -600,7 +611,6 @@
                             });
                             if (aileIkonlari[doc.id]) {
                                 aileIkonlari[doc.id].setLatLng([uye.enlem, uye.boylam]);
-                                aileIkonlari[doc.id].setPopupContent('👨‍👩‍👧 <b>' + uye.isim + '</b>');
                             } else {
                                 aileIkonlari[doc.id] = L.marker([uye.enlem, uye.boylam], { icon: aileIkon })
                                     .addTo(harita).bindPopup('👨‍👩‍👧 <b>' + uye.isim + '</b>');
@@ -686,9 +696,7 @@
             });
         }
 
-        function cikisYapDogrulama() {
-            auth.signOut().then(() => { location.reload(); });
-        }
+        function cikisYapDogrulama() { auth.signOut().then(() => { location.reload(); }); }
 
         function sifreSifirla() {
             let email = document.getElementById('giris-email').value.trim();
@@ -700,8 +708,7 @@
 
         function hataGoster(mesaj, renk = 'red') {
             let el = document.getElementById('giris-hata');
-            el.style.color = renk;
-            el.innerText = mesaj;
+            el.style.color = renk; el.innerText = mesaj;
         }
 
         function hataYazisi(kod) {
@@ -785,7 +792,7 @@
         function konumHatasi(error) { console.log("Konum hatası."); }
 
         function ayarlariAc() {
-            let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap\n\nYapmak istediğiniz işlemin numarasını yazın:");
+            let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap / Hesap Değiştir\n\nYapmak istediğiniz işlemin numarasını yazın:");
             if (secim == "1") {
                 let mevcutNo = localStorage.getItem('acilDurumNumarasi')
                     ? localStorage.getItem('acilDurumNumarasi').substring(2) : "";
@@ -833,6 +840,25 @@
                 riskKatmani.clearLayers();
                 let simdi = new Date().getTime();
                 const YIRMI_DORT_SAAT = 24 * 60 * 60 * 1000;
+
+                snapshot.docChanges().forEach((change) => {
+                    // Yeni eklenen risk varsa ve ilk yükleme değilse bildir
+                    if (change.type === "added" && !ilkYukleme && isPremium) {
+                        let yeniRisk = change.doc.data();
+                        if (yeniRisk.enlem && guncelEnlem !== 0) {
+                            let mesafe = mesafeHesapla(guncelEnlem, guncelBoylam, yeniRisk.enlem, yeniRisk.boylam);
+                            if (mesafe <= 500) {
+                                yakinRiskBildir(yeniRisk.tur, mesafe);
+                            }
+                        }
+                    }
+                });
+
+                // İlk yükleme tamamlandı
+                if (ilkYukleme) {
+                    setTimeout(() => { ilkYukleme = false; }, 3000);
+                }
+
                 snapshot.forEach((doc) => {
                     let risk = doc.data(); let rId = doc.id;
                     let dogrulamaSayisi = risk.dogrulama || 0;
