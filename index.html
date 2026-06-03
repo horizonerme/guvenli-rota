@@ -253,6 +253,7 @@
         let acilTelemetriInterval = null, acilDokumanId = null;
         let guvenPuani = 50, isPremium = false, isAileUye = false;
         let bannerTimeout = null, ilkYukleme = true;
+        let cihazTokeni = "";   // YENİ: FCM token burada saklanır
 
         // Güvenli bölge - üye bazlı
         let cizimModu = false;
@@ -273,6 +274,20 @@
         let aileIkonlari = {}, aileUyelerDinleyici = null;
         const uye_renkleri = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
         const gb_renkleri  = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c']; // polygon renkleri
+
+        // YENİ: Android'den FCM token'ı al, global degiskene yaz
+        function tokeniYakala(token) {
+            cihazTokeni = token || "";
+            // Token geldiğinde, eğer zaten bir gruptaysak kaydet
+            if (cihazTokeni && aktifGrupKodu && kullaniciUid) {
+                db.collection('aile_gruplari').doc(aktifGrupKodu)
+                    .collection('uyeler').doc(kullaniciUid)
+                    .set({ token: cihazTokeni }, { merge: true }).catch(() => {});
+            }
+        }
+        function tokeniIste() {
+            try { AndroidBridge.fcmTokenAl('tokeniYakala'); } catch(e) {}
+        }
 
         function kahveAc() {
             window.location.href = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
@@ -580,7 +595,7 @@
             if (!isPremium) { alert('Bu özellik sadece Premium üyelere açıktır.'); return; }
             let kod = 'GR-' + Math.floor(1000 + Math.random() * 9000);
             db.collection('aile_gruplari').doc(kod).set({ olusturulma: firebase.firestore.FieldValue.serverTimestamp(), kurucu: kullaniciUid, maxUye: 5 })
-                .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }))
+                .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, tarih: firebase.firestore.FieldValue.serverTimestamp() }))
                 .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); })
                 .catch(e => alert('Grup oluşturulamadı: ' + e.message));
         }
@@ -592,7 +607,7 @@
                 if (!doc.exists) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup bulunamadı.'; return; }
                 return db.collection('aile_gruplari').doc(kod).collection('uyeler').get().then((uyeler) => {
                     if (uyeler.size >= 5) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return; }
-                    return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() })
+                    return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, tarih: firebase.firestore.FieldValue.serverTimestamp() })
                         .then(() => { if (!isPremium) return db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: true }, { merge: true }).then(() => { isAileUye = true; }); })
                         .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); });
                 });
@@ -650,7 +665,13 @@
         }
         function kayitliGrubaBaslan() {
             let kayitliKod = localStorage.getItem('aile_grup_kodu_' + kullaniciUid);
-            if (kayitliKod && (isPremium || isAileUye)) { aktifGrupKodu = kayitliKod; aileKonumGuncellemeBaslat(kayitliKod); aileUyelerDinle(kayitliKod); }
+            if (kayitliKod && (isPremium || isAileUye)) {
+                aktifGrupKodu = kayitliKod;
+                aileKonumGuncellemeBaslat(kayitliKod);
+                aileUyelerDinle(kayitliKod);
+                // YENİ: kayıtlı gruba dönünce token'ı güncelle
+                if (cihazTokeni) db.collection('aile_gruplari').doc(kayitliKod).collection('uyeler').doc(kullaniciUid).set({ token: cihazTokeni }, { merge: true }).catch(() => {});
+            }
         }
 
         // ===== DİĞER FONKSİYONLAR =====
@@ -702,6 +723,7 @@
             kullaniciAdi = kullanici.displayName || kullanici.email; kullaniciUid = kullanici.uid;
             localStorage.setItem('kullanici_adi', kullaniciAdi);
             try { AndroidBridge.kullaniciAdiniKaydet(kullaniciAdi); } catch(e) {}
+            tokeniIste();   // YENİ: giriş yapınca FCM token'ı iste
             document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'none';
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
             document.getElementById('puan-degeri').innerText = guvenPuani;
@@ -790,7 +812,7 @@
                     else { alert("İptal edildi."); return; }
                 }
                 buton.style.backgroundColor = "#000"; buton.innerText = "🛑 YAYINI KAPAT";
-                db.collection("acil_durumlar").add({ isim:kullaniciAdi, enlem:guncelEnlem, boylam:guncelBoylam, aktif:true, tarih:firebase.firestore.FieldValue.serverTimestamp() }).then((docRef) => {
+                db.collection("acil_durumlar").add({ isim:kullaniciAdi, enlem:guncelEnlem, boylam:guncelBoylam, aktif:true, grupKodu:(aktifGrupKodu||""), tarih:firebase.firestore.FieldValue.serverTimestamp() }).then((docRef) => {
                     acilDokumanId = docRef.id;
                     acilTelemetriInterval = setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { guncelEnlem = pos.coords.latitude; guncelBoylam = pos.coords.longitude; db.collection("acil_durumlar").doc(docRef.id).update({ enlem:guncelEnlem, boylam:guncelBoylam, tarih:firebase.firestore.FieldValue.serverTimestamp() }); }, null, { enableHighAccuracy:true }); }, 4000);
                     let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
