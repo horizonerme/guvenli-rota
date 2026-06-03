@@ -34,7 +34,6 @@
         #risk-buton { position: fixed; top: 20px; right: 20px; background-color: #ffcc00; color: #333; border: none; padding: 12px 20px; font-size: 16px; font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999; cursor: pointer; }
         #guven-puani-rozet { position: fixed; top: 20px; left: 20px; background-color: #28a745; color: white; padding: 8px 15px; font-size: 14px; font-weight: bold; border-radius: 20px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999; }
         #ayarlar-buton { position: fixed; top: 65px; left: 20px; background-color: #6c757d; color: white; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999; cursor: pointer; }
-        #kahve-buton { display: none; position: fixed; top: 237px; left: 20px; background: linear-gradient(135deg, #c8793a, #e8a45a); color: white; border: none; padding: 7px 13px; font-size: 12px; font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(200,121,58,0.4); z-index: 999; cursor: pointer; white-space: nowrap; }
         #aile-buton { position: fixed; top: 151px; left: 20px; background-color: #6f42c1; color: white; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999; cursor: pointer; white-space: nowrap; }
         #guvenli-bolge-buton { position: fixed; top: 194px; left: 20px; background-color: #28a745; color: white; border: none; padding: 8px 15px; font-size: 13px; font-weight: bold; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0,0,0,0.2); z-index: 999; cursor: pointer; white-space: nowrap; }
 
@@ -153,7 +152,6 @@
     <button id="ayarlar-buton" onclick="ayarlariAc()">⚙️ Ayarlar</button>
     <button id="aile-buton" onclick="aileTakipAc()">👨‍👩‍👧 Aile Takip</button>
     <button id="guvenli-bolge-buton" onclick="guvenliBolyeBaslat()">🟢 Güvenli Bölge</button>
-    <button id="kahve-buton" onclick="kahveAc()">☕ Bize Destek Ol</button>
     <button id="risk-buton">⚠️ Risk Bildir</button>
     <button id="acil-buton">🚨 ACİL DURUM</button>
 
@@ -290,9 +288,6 @@
             try { AndroidBridge.fcmTokenAl('tokeniYakala'); } catch(e) {}
         }
 
-        function kahveAc() {
-            window.location.href = 'intent://www.shopier.com/horizoner/47576302#Intent;scheme=https;action=android.intent.action.VIEW;package=com.android.chrome;end';
-        }
         function mesafeHesapla(lat1, lon1, lat2, lon2) {
             const R = 6371000, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
             const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
@@ -561,8 +556,7 @@
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
                 if (doc.exists) { isPremium = doc.data().premium === true; isAileUye = doc.data().aile_uye === true; }
                 else { isPremium = false; isAileUye = false; }
-                document.getElementById('kahve-buton').style.display = isPremium ? 'none' : 'block';
-            }).catch(() => { isPremium = false; isAileUye = false; document.getElementById('kahve-buton').style.display = 'block'; });
+            }).catch(() => { isPremium = false; isAileUye = false; });
         }
 
         // ===== AİLE TAKİP =====
