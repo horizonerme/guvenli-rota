@@ -595,7 +595,7 @@
             if (!isPremium) { alert('Bu özellik sadece Premium üyelere açıktır.'); return; }
             let kod = 'GR-' + Math.floor(1000 + Math.random() * 9000);
             db.collection('aile_gruplari').doc(kod).set({ olusturulma: firebase.firestore.FieldValue.serverTimestamp(), kurucu: kullaniciUid, maxUye: 5 })
-                .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, tarih: firebase.firestore.FieldValue.serverTimestamp() }))
+                .then(() => db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, numara: (localStorage.getItem('kendiNumaram') || ""), tarih: firebase.firestore.FieldValue.serverTimestamp() }))
                 .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); })
                 .catch(e => alert('Grup oluşturulamadı: ' + e.message));
         }
@@ -607,7 +607,7 @@
                 if (!doc.exists) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup bulunamadı.'; return; }
                 return db.collection('aile_gruplari').doc(kod).collection('uyeler').get().then((uyeler) => {
                     if (uyeler.size >= 5) { mesajEl.style.color = 'red'; mesajEl.innerText = '❌ Grup dolu (max 5 kişi).'; return; }
-                    return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, tarih: firebase.firestore.FieldValue.serverTimestamp() })
+                    return db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).set({ isim: kullaniciAdi, enlem: guncelEnlem, boylam: guncelBoylam, token: cihazTokeni, numara: (localStorage.getItem('kendiNumaram') || ""), tarih: firebase.firestore.FieldValue.serverTimestamp() })
                         .then(() => { if (!isPremium) return db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: true }, { merge: true }).then(() => { isAileUye = true; }); })
                         .then(() => { aktifGrupKodu = kod; localStorage.setItem('aile_grup_kodu_' + kullaniciUid, kod); try { AndroidBridge.grupKodunuKaydet(kod); } catch(e) {} aileKonumGuncellemeBaslat(kod); grupKodPaneliniGoster(kod); });
                 });
@@ -752,12 +752,68 @@
         }
         function konumHatasi() {}
         function ayarlariAc() {
-            let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Acil Durum Numarasını Değiştir\n2 - Çıkış Yap / Hesap Değiştir\n\nYapmak istediğiniz işlemin numarasını yazın:");
+            let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Kendi Telefon Numaramı Kaydet\n2 - Acil Durum Kişisini Seç (gruptan)\n3 - Çıkış Yap / Hesap Değiştir\n\nYapmak istediğiniz işlemin numarasını yazın:");
             if (secim == "1") {
-                let mevcutNo = localStorage.getItem('acilDurumNumarasi') ? localStorage.getItem('acilDurumNumarasi').substring(2) : "";
-                let yeniNo = prompt("Yeni acil durum numarasını başında '0' OLMADAN girin:", mevcutNo);
-                if (yeniNo && yeniNo.length >= 10) { localStorage.setItem('acilDurumNumarasi', "90" + yeniNo.replace(/\D/g,'').slice(-10)); alert("Acil durum numarası güncellendi!"); }
-            } else if (secim == "2") { auth.signOut().then(() => location.reload()); }
+                kendiNumaramiKaydet();
+            } else if (secim == "2") {
+                acilDurumKisisiSec();
+            } else if (secim == "3") {
+                auth.signOut().then(() => location.reload());
+            }
+        }
+
+        // Kullanıcı kendi numarasını girer, grupta ve profilde saklanır (WhatsApp için)
+        function kendiNumaramiKaydet() {
+            let mevcut = localStorage.getItem('kendiNumaram') ? localStorage.getItem('kendiNumaram').substring(2) : "";
+            let yeni = prompt("📱 Kendi telefon numaranı başında '0' OLMADAN gir:\n(Acil durumda seni arayacak kişilere bu numara gösterilir)", mevcut);
+            if (yeni && yeni.replace(/\D/g,'').length >= 10) {
+                let tamNo = "90" + yeni.replace(/\D/g,'').slice(-10);
+                localStorage.setItem('kendiNumaram', tamNo);
+                // Profile kaydet
+                db.collection('kullanicilar').doc(kullaniciUid).set({ numara: tamNo }, { merge: true }).catch(() => {});
+                // Aktif gruptaki üye kaydına da yaz
+                if (aktifGrupKodu) {
+                    db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').doc(kullaniciUid).set({ numara: tamNo }, { merge: true }).catch(() => {});
+                }
+                alert("✅ Numaran kaydedildi!");
+            } else if (yeni !== null) {
+                alert("Geçersiz numara. En az 10 hane olmalı.");
+            }
+        }
+
+        // Gruptan bir kişiyi "acil durum kişisi" olarak seç (WhatsApp ona açılır)
+        function acilDurumKisisiSec() {
+            if (!aktifGrupKodu) { alert("Önce bir aile grubuna katılmalısın.\n(Aile Takip menüsünden)"); return; }
+            db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').get().then((snapshot) => {
+                let secenekler = [];
+                let liste = "🚨 ACİL DURUM KİŞİSİ SEÇ 🚨\n\nAcil durumda WhatsApp'tan konumun bu kişiye gönderilir.\n\n";
+                let i = 1;
+                snapshot.forEach((doc) => {
+                    if (doc.id === kullaniciUid) return;
+                    let uye = doc.data();
+                    let numVar = uye.numara ? "✓" : "✗ (numara yok)";
+                    secenekler.push({ uid: doc.id, isim: uye.isim || "Üye", numara: uye.numara || "" });
+                    liste += i + " - " + (uye.isim || "Üye") + " " + numVar + "\n";
+                    i++;
+                });
+                if (secenekler.length === 0) {
+                    alert("Grupta başka üye yok. Önce birini gruba ekle.");
+                    return;
+                }
+                let secim = prompt(liste + "\nSeçmek istediğin kişinin numarasını yaz:");
+                let idx = parseInt(secim) - 1;
+                if (idx >= 0 && idx < secenekler.length) {
+                    let kisi = secenekler[idx];
+                    if (!kisi.numara) {
+                        alert("⚠️ " + kisi.isim + " henüz telefon numarasını kaydetmemiş. O kişi Ayarlar'dan numarasını kaydetmeli.");
+                        return;
+                    }
+                    localStorage.setItem('acilKisiUid', kisi.uid);
+                    localStorage.setItem('acilKisiIsim', kisi.isim);
+                    localStorage.setItem('acilKisiNumara', kisi.numara);
+                    alert("✅ Acil durum kişin: " + kisi.isim + "\nArtık acil durumda WhatsApp ona açılacak.");
+                }
+            }).catch((e) => alert("Üyeler yüklenemedi: " + e.message));
         }
         document.getElementById('risk-buton').addEventListener('click', () => document.getElementById('risk-menusu').style.display = 'block');
         function menuyuKapat() { document.getElementById('risk-menusu').style.display = 'none'; }
@@ -805,19 +861,22 @@
                 alert("Acil durum yayını kapatıldı. Güvendesiniz."); return;
             }
             if (guncelEnlem !== 0) {
-                let acilNumara = localStorage.getItem('acilDurumNumarasi');
+                let acilNumara = localStorage.getItem('acilKisiNumara');
+                let acilKisiIsim = localStorage.getItem('acilKisiIsim') || "";
                 if (!acilNumara) {
-                    let g = prompt("🚨 Acil Durum Kişisi 🚨\n\nKonumun iletileceği numarayı başında '0' olmadan yazın:");
-                    if (g && g.length >= 10) { acilNumara = "90" + g.replace(/\D/g,'').slice(-10); localStorage.setItem('acilDurumNumarasi', acilNumara); }
-                    else { alert("İptal edildi."); return; }
+                    alert("⚠️ Henüz acil durum kişisi seçmedin.\n\nUygulama alarmı yine de aile grubuna gidecek, ama WhatsApp gönderimi için:\nAyarlar → Acil Durum Kişisini Seç\n\n(Önce sen ve o kişi numaranızı kaydetmelisiniz.)");
                 }
                 buton.style.backgroundColor = "#000"; buton.innerText = "🛑 YAYINI KAPAT";
                 db.collection("acil_durumlar").add({ isim:kullaniciAdi, enlem:guncelEnlem, boylam:guncelBoylam, aktif:true, grupKodu:(aktifGrupKodu||""), tarih:firebase.firestore.FieldValue.serverTimestamp() }).then((docRef) => {
                     acilDokumanId = docRef.id;
                     acilTelemetriInterval = setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { guncelEnlem = pos.coords.latitude; guncelBoylam = pos.coords.longitude; db.collection("acil_durumlar").doc(docRef.id).update({ enlem:guncelEnlem, boylam:guncelBoylam, tarih:firebase.firestore.FieldValue.serverTimestamp() }); }, null, { enableHighAccuracy:true }); }, 4000);
-                    let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
-                    window.open("https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam), '_blank');
-                    alert("🚨 ACİL DURUM YAYINI BAŞLADI!\nWhatsApp'a yönlendiriliyorsunuz.");
+                    if (acilNumara) {
+                        let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
+                        window.open("https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam), '_blank');
+                        alert("🚨 ACİL DURUM YAYINI BAŞLADI!\n" + (acilKisiIsim ? acilKisiIsim + " için " : "") + "WhatsApp'a yönlendiriliyorsunuz.\nAile grubuna da alarm gönderildi.");
+                    } else {
+                        alert("🚨 ACİL DURUM YAYINI BAŞLADI!\nAile grubuna alarm gönderildi.");
+                    }
                 });
             } else { alert("Konum bekleniyor, tekrar deneyin."); }
         });
