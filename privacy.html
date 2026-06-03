@@ -221,7 +221,7 @@
     <!-- TÜRKÇE -->
     <div class="lang-content active" id="lang-tr">
 
-        <div class="update-badge">✅ Son güncelleme: Mayıs 2026</div>
+        <div class="update-badge">✅ Son güncelleme: Haziran 2026</div>
 
         <section>
             <h2><span class="icon">📋</span> Genel Bilgi</h2>
@@ -234,12 +234,19 @@
         <section>
             <h2><span class="icon">📍</span> Toplanan Veriler</h2>
             <ul>
-                <li><strong>Konum Verisi:</strong> Harita üzerinde konumunuzu göstermek, risk noktalarını görüntülemek ve acil durum paylaşımı için kullanılır. Konum verisi yalnızca uygulama açıkken veya acil durum aktifken işlenir.</li>
+                <li><strong>Konum Verisi (Ön Plan ve Arka Plan):</strong> Harita üzerinde konumunuzu göstermek, risk noktalarını görüntülemek, aile grubu üyelerinin konumunu paylaşmak, güvenli bölge kontrolü yapmak ve acil durum paylaşımı için kullanılır. Bu uygulama, aile takibi ve güvenli bölge uyarıları gibi temel güvenlik özelliklerinin çalışması için konumunuzu <strong>uygulama kapalıyken veya arka plandayken de</strong> (ön plan hizmeti / foreground service aracılığıyla) işleyebilir. Konum takibi yalnızca bir aile grubuna katıldığınızda veya acil durum aktifken çalışır.</li>
                 <li><strong>E-posta Adresi:</strong> Hesap oluşturma ve kimlik doğrulama için Firebase Authentication aracılığıyla toplanır.</li>
                 <li><strong>Kullanıcı Adı (Görünen Ad):</strong> Harita üzerinde kimliğinizi temsil etmek için kullanılır.</li>
+                <li><strong>Telefon Numarası (İsteğe Bağlı):</strong> Yalnızca siz girerseniz, acil durumda yakınlarınızla WhatsApp üzerinden iletişim kurulabilmesi için saklanır. Girmek zorunlu değildir.</li>
+                <li><strong>Cihaz Bildirim Kimliği (FCM Token):</strong> Acil durum ve güvenli bölge uyarılarını cihazınıza iletebilmek için Firebase Cloud Messaging aracılığıyla toplanır ve aile grubunuzla ilişkilendirilir. Bu kimlik, yalnızca size ve aile grubunuza bildirim göndermek için kullanılır.</li>
                 <li><strong>Risk Bildirimleri:</strong> Kullanıcıların bildirdiği konum tabanlı risk bilgileri Firebase Firestore'da saklanır.</li>
-                <li><strong>Acil Durum Verisi:</strong> Acil durum butonu kullanıldığında anlık konum bilgisi Firebase'e iletilir ve yakınlarınızla WhatsApp üzerinden paylaşılır.</li>
+                <li><strong>Acil Durum Verisi:</strong> Acil durum butonu kullanıldığında anlık konum bilgisi Firebase'e iletilir, aile grubunuza bildirim olarak gönderilir ve seçtiğiniz kişiyle WhatsApp üzerinden paylaşılır.</li>
             </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔔</span> Bildirimler</h2>
+            <p>Uygulama, acil durum ve güvenli bölge uyarılarını size iletmek için Firebase Cloud Messaging (FCM) push bildirim hizmetini kullanır. Bu bildirimler, aile grubunuzdaki bir üye acil durum başlattığında veya güvenli bölge dışına çıktığında, cihazınız kilitliyken dahi size ulaşır. Bildirim iznini cihaz ayarlarınızdan istediğiniz zaman kapatabilirsiniz.</p>
         </section>
 
         <section>
@@ -248,6 +255,8 @@
             <ul>
                 <li>Uygulamanın temel güvenlik özelliklerini sağlamak</li>
                 <li>Harita üzerinde risk noktalarını göstermek</li>
+                <li>Aile grubu üyelerinin konumunu ve güvenli bölge durumunu takip etmek</li>
+                <li>Acil durum ve güvenli bölge uyarılarını bildirim olarak göndermek</li>
                 <li>Acil durum anında konum paylaşımını sağlamak</li>
                 <li>Kullanıcı hesabını yönetmek</li>
             </ul>
@@ -257,7 +266,7 @@
             <h2><span class="icon">🌐</span> Üçüncü Taraf Hizmetler</h2>
             <p>Uygulama aşağıdaki üçüncü taraf hizmetleri kullanmaktadır:</p>
             <ul>
-                <li><strong>Firebase (Google):</strong> Kimlik doğrulama, veritabanı ve bildirim hizmetleri için. Firebase Gizlilik Politikası: policies.google.com/privacy</li>
+                <li><strong>Firebase (Google):</strong> Kimlik doğrulama, veritabanı (Firestore) ve bildirim (Cloud Messaging) hizmetleri için. Firebase Gizlilik Politikası: policies.google.com/privacy</li>
                 <li><strong>OpenStreetMap / Esri:</strong> Harita görüntüleme için. Kişisel veri işlenmez.</li>
                 <li><strong>WhatsApp:</strong> Acil durum mesajı göndermek için. Uygulama WhatsApp'a yalnızca yönlendirme yapar, veri aktarımı gerçekleştirmez.</li>
                 <li><strong>Leaflet.js:</strong> Açık kaynaklı harita kütüphanesi. Veri toplamaz.</li>
@@ -274,6 +283,8 @@
             <ul>
                 <li>Hesabınızı ve verilerinizi istediğiniz zaman silebilirsiniz</li>
                 <li>Konum iznini istediğiniz zaman cihaz ayarlarından iptal edebilirsiniz</li>
+                <li>Bildirim iznini istediğiniz zaman cihaz ayarlarından kapatabilirsiniz</li>
+                <li>Aile grubundan ayrıldığınızda konum ve bildirim kimliğiniz gruptan kaldırılır</li>
                 <li>Verilerinize erişim veya silme talebinde bulunabilirsiniz</li>
             </ul>
         </section>
@@ -299,7 +310,7 @@
     <!-- ENGLISH -->
     <div class="lang-content" id="lang-en">
 
-        <div class="update-badge">✅ Last updated: May 2026</div>
+        <div class="update-badge">✅ Last updated: June 2026</div>
 
         <section>
             <h2><span class="icon">📋</span> Overview</h2>
@@ -312,12 +323,19 @@
         <section>
             <h2><span class="icon">📍</span> Data We Collect</h2>
             <ul>
-                <li><strong>Location Data:</strong> Used to display your position on the map, show risk points, and share your location during emergencies. Location is only processed while the app is open or an emergency is active.</li>
+                <li><strong>Location Data (Foreground & Background):</strong> Used to display your position on the map, show risk points, share the location of family group members, perform safe-zone checks, and share your location during emergencies. To enable core safety features such as family tracking and safe-zone alerts, this app may process your location <strong>even when the app is closed or in the background</strong> (via a foreground service). Location tracking only operates when you have joined a family group or when an emergency is active.</li>
                 <li><strong>Email Address:</strong> Collected via Firebase Authentication for account creation and identity verification.</li>
                 <li><strong>Display Name:</strong> Used to represent your identity on the map.</li>
+                <li><strong>Phone Number (Optional):</strong> Stored only if you provide it, so that your contacts can be reached via WhatsApp during an emergency. It is not mandatory.</li>
+                <li><strong>Device Notification ID (FCM Token):</strong> Collected via Firebase Cloud Messaging to deliver emergency and safe-zone alerts to your device, and associated with your family group. This ID is used only to send notifications to you and your family group.</li>
                 <li><strong>Risk Reports:</strong> Location-based risk information reported by users is stored in Firebase Firestore.</li>
-                <li><strong>Emergency Data:</strong> When the emergency button is activated, your real-time location is sent to Firebase and shared with your contacts via WhatsApp.</li>
+                <li><strong>Emergency Data:</strong> When the emergency button is activated, your real-time location is sent to Firebase, delivered as a notification to your family group, and shared with your chosen contact via WhatsApp.</li>
             </ul>
+        </section>
+
+        <section>
+            <h2><span class="icon">🔔</span> Notifications</h2>
+            <p>The app uses Firebase Cloud Messaging (FCM) push notifications to deliver emergency and safe-zone alerts. These notifications reach you even when your device is locked, when a member of your family group starts an emergency or leaves a safe zone. You can disable notification permission at any time from your device settings.</p>
         </section>
 
         <section>
@@ -326,6 +344,8 @@
             <ul>
                 <li>Providing the app's core safety features</li>
                 <li>Displaying risk points on the map</li>
+                <li>Tracking the location and safe-zone status of family group members</li>
+                <li>Sending emergency and safe-zone alerts as notifications</li>
                 <li>Enabling location sharing during emergencies</li>
                 <li>Managing user accounts</li>
             </ul>
@@ -334,7 +354,7 @@
         <section>
             <h2><span class="icon">🌐</span> Third-Party Services</h2>
             <ul>
-                <li><strong>Firebase (Google):</strong> Used for authentication, database, and notification services. Firebase Privacy Policy: policies.google.com/privacy</li>
+                <li><strong>Firebase (Google):</strong> Used for authentication, database (Firestore), and notification (Cloud Messaging) services. Firebase Privacy Policy: policies.google.com/privacy</li>
                 <li><strong>OpenStreetMap / Esri:</strong> Used for map rendering. No personal data is processed.</li>
                 <li><strong>WhatsApp:</strong> Used to send emergency messages. The app only redirects to WhatsApp — no data transfer occurs.</li>
                 <li><strong>Leaflet.js:</strong> Open-source map library. Does not collect any data.</li>
@@ -351,6 +371,8 @@
             <ul>
                 <li>You can delete your account and data at any time</li>
                 <li>You can revoke location permission at any time from device settings</li>
+                <li>You can disable notification permission at any time from device settings</li>
+                <li>When you leave a family group, your location and notification ID are removed from the group</li>
                 <li>You can request access to or deletion of your data</li>
             </ul>
         </section>
