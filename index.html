@@ -911,7 +911,7 @@
                             dahaOnceUyarilanlar[aId] = true;
                             document.getElementById('alarm-mesaj-metni').innerText = "DİKKAT: " + ad.isim.toUpperCase() + " acil durum çağrısı yaptı!";
                             document.getElementById('acil-alarm-ekrani').style.display = "flex";
-                            acilDurumSireni.play().catch(() => {});
+                            // Web sireni kapatildi - ses artik FCM bildiriminden geliyor (cift ses onlendi)
                         }
                         if (canliTakipIkonlari[aId]) canliTakipIkonlari[aId].setLatLng([ad.enlem, ad.boylam]);
                         else canliTakipIkonlari[aId] = L.marker([ad.enlem, ad.boylam], { icon:canliMaviIkon }).addTo(harita).bindPopup("⚠️ <b>" + ad.isim + " (CANLI TAKİP)</b>").openPopup();
