@@ -267,6 +267,7 @@
         let guvenliNoktalarMap = {}; // { uyeUid: [{lat, lng}] }
         let guvenliBolyeKontrolInterval = null;
         let guvenliBolyeBannerGosteriyor = false;
+        let disaridaOlanlar = {}; // Bölge dışına çıkmış kişileri takip eder (tekrar ses çalmasını önler)
         let grupUyeler = {}; // { uid: {isim, enlem, boylam} }
 
         // Aile takip
@@ -495,6 +496,8 @@
                         let veri = doc.data();
                         let uid = doc.id;
                         if (!veri.noktalar || veri.noktalar.length < 3) return;
+                        // Zaten çizilmişse tekrar çizme (çift çizimi önle)
+                        if (guvenliPolygonlar[uid]) return;
                         guvenliNoktalarMap[uid] = veri.noktalar;
                         let latlngs = veri.noktalar.map(n => [n.lat, n.lng]);
                         let renk = veri.renk || '#28a745';
@@ -517,6 +520,7 @@
                 if (!aktifGrupKodu || Object.keys(guvenliNoktalarMap).length === 0) return;
                 db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').get().then((snapshot) => {
                     let disaridakiIsimler = [];
+                    let yeniDisariCikan = false;
                     snapshot.forEach((doc) => {
                         let uid = doc.id;
                         if (uid === kullaniciUid) return;
@@ -524,7 +528,17 @@
                         let bolge = guvenliNoktalarMap[uid];
                         if (!bolge || !uye.enlem) return;
                         let icinde = noktaPolygonIcindeMi(uye.enlem, uye.boylam, bolge);
-                        if (!icinde) disaridakiIsimler.push(uye.isim);
+                        if (!icinde) {
+                            disaridakiIsimler.push(uye.isim);
+                            // Bu kişi daha önce dışarıda değilse, YENİ çıkmış demektir -> ses çal
+                            if (!disaridaOlanlar[uid]) {
+                                yeniDisariCikan = true;
+                                disaridaOlanlar[uid] = true;
+                            }
+                        } else {
+                            // Kişi bölgeye geri girdi -> bayrağı temizle (tekrar çıkarsa yine ötsün)
+                            if (disaridaOlanlar[uid]) delete disaridaOlanlar[uid];
+                        }
                     });
                     let banner = document.getElementById('guvenli-bolge-banner');
                     if (disaridakiIsimler.length > 0) {
@@ -532,7 +546,8 @@
                         document.getElementById('gb-mesafe-metin').innerText = disaridakiIsimler.join(', ') + ' bölge dışında!';
                         banner.style.display = 'block';
                         guvenliBolyeBannerGosteriyor = true;
-                        guvenliBolyeUyariSesi();
+                        // Ses SADECE yeni biri dışarı çıktığında çalsın (her turda değil)
+                        if (yeniDisariCikan) guvenliBolyeUyariSesi();
                     } else if (guvenliBolyeBannerGosteriyor) {
                         banner.style.display = 'none';
                         guvenliBolyeBannerGosteriyor = false;
@@ -671,6 +686,8 @@
                 aileUyelerDinle(kayitliKod);
                 // YENİ: kayıtlı gruba dönünce token'ı güncelle
                 if (cihazTokeni) db.collection('aile_gruplari').doc(kayitliKod).collection('uyeler').doc(kullaniciUid).set({ token: cihazTokeni }, { merge: true }).catch(() => {});
+                // YENİ: grup bağlantısı kurulduktan sonra kaydedilmiş güvenli bölgeleri yükle
+                setTimeout(kayitliGuvenliBolyeYukle, 800);
             }
         }
 
