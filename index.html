@@ -553,16 +553,20 @@
 
         // Premium kontrolü
         function premiumKontrolEt(uid) {
+            // DENEME DÖNEMI: Premium özellikler (grup, güvenli bölge) herkese açık.
+            // Billing kurulunca burası gerçek premium kontrolüne dönecek.
+            isPremium = true;
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
-                if (doc.exists) { isPremium = doc.data().premium === true; isAileUye = doc.data().aile_uye === true; }
-                else { isPremium = false; isAileUye = false; }
+                if (doc.exists) { isAileUye = doc.data().aile_uye === true; }
+                else { isAileUye = false; }
                 reklamDurumunuAyarla();
-            }).catch(() => { isPremium = false; isAileUye = false; reklamDurumunuAyarla(); });
+            }).catch(() => { isAileUye = false; reklamDurumunuAyarla(); });
         }
 
-        // Premium kullanıcıda reklamı gizle, normal kullanıcıda göster
+        // Deneme döneminde reklam herkese gösterilir (tek gelir kaynağı).
+        // Billing sonrası: gerçek ücretli premium kullanıcıda reklam gizlenecek.
         function reklamDurumunuAyarla() {
-            try { AndroidBridge.reklamiGizle(isPremium === true); } catch(e) {}
+            try { AndroidBridge.reklamiGizle(false); } catch(e) {}
         }
 
         // ===== AİLE TAKİP =====
