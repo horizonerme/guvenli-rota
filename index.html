@@ -556,7 +556,13 @@
             db.collection('kullanicilar').doc(uid).get().then((doc) => {
                 if (doc.exists) { isPremium = doc.data().premium === true; isAileUye = doc.data().aile_uye === true; }
                 else { isPremium = false; isAileUye = false; }
-            }).catch(() => { isPremium = false; isAileUye = false; });
+                reklamDurumunuAyarla();
+            }).catch(() => { isPremium = false; isAileUye = false; reklamDurumunuAyarla(); });
+        }
+
+        // Premium kullanıcıda reklamı gizle, normal kullanıcıda göster
+        function reklamDurumunuAyarla() {
+            try { AndroidBridge.reklamiGizle(isPremium === true); } catch(e) {}
         }
 
         // ===== AİLE TAKİP =====
