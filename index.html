@@ -165,6 +165,16 @@
         </div>
     </div>
 
+    <!-- ARKA PLANDA KONUM KULLANIMI - AÇIK BİLGİLENDİRME (Google Play politikası gereği,
+         native izin diyaloğundan ÖNCE gösteriliyor) -->
+    <div id="arka-plan-bilgilendirme-modal" class="modal-overlay">
+        <div class="modal-kutu">
+            <h3>📍 Arka Planda Konum Kullanımı</h3>
+            <p style="text-align:left; font-size:13px; color:#555;">Güvenli Rota, konumunuzu — <b>uygulama ekranı kapalıyken veya arka plandayken bile</b> — aile grubunuzla paylaşmak ve acil durumlarda konumunuzu bildirebilmek için kullanır. Takip sırasında bildirim çubuğunda sürekli bir bildirim görünür. Bunu istediğiniz an Ayarlar'dan kapatabilirsiniz.</p>
+            <button class="aile-btn" style="background:#28a745; color:white;" onclick="arkaPlanBilgilendirmeOnayla()">✅ Anladım, Devam Et</button>
+        </div>
+    </div>
+
     <!-- AİLE TAKİP MODALI -->
     <div id="aile-modal" class="modal-overlay">
         <div id="aile-kutu" class="modal-kutu">
@@ -252,6 +262,16 @@
         let guvenPuani = 50, isPremium = false, isAileUye = false;
         let bannerTimeout = null, ilkYukleme = true;
         let cihazTokeni = "";   // YENİ: FCM token burada saklanır
+
+        // Native (Capacitor) sarmalayıcı içinde mi çalışıyoruz? Capacitor'ın
+        // native köprüsü sayfaya otomatik enjekte ediyor — plain <script>
+        // içinden import gerekmeden window.Capacitor.Plugins üzerinden
+        // erişilebiliyor (registerPlugin ile aynı native tarafa bağlanır).
+        const NATIVE_MI = () => Boolean(window.Capacitor?.isNativePlatform?.());
+        const BackgroundGeolocation = window.Capacitor?.Plugins?.BackgroundGeolocation;
+        const PilOptimizasyonu = window.Capacitor?.Plugins?.PilOptimizasyonu;
+        let konumTakibiBaslatildi = false;
+        let bgWatcherId = null, tarayiciWatchId = null;
 
         // Güvenli bölge - üye bazlı
         let cizimModu = false;
@@ -724,7 +744,7 @@
             });
         }
         function tekrarGonder() { auth.currentUser.sendEmailVerification().then(() => { let el = document.getElementById('dogrulama-mesaj'); el.style.color = 'green'; el.innerText = '✅ Doğrulama e-postası tekrar gönderildi!'; }); }
-        function cikisYapDogrulama() { auth.signOut().then(() => location.reload()); }
+        function cikisYapDogrulama() { konumTakibiDurdur(); auth.signOut().then(() => location.reload()); }
         function sifreSifirla() {
             let email = document.getElementById('giris-email').value.trim();
             if (!email) { hataGoster('Lütfen önce e-posta adresinizi girin.'); return; }
@@ -749,7 +769,7 @@
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
             document.getElementById('puan-degeri').innerText = guvenPuani;
             premiumKontrolEt(kullanici.uid);
-            if (!harita && navigator.geolocation) navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
+            konumTakibiBaslat();
         }
 
         let kirmiziIkon = L.icon({ iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png', shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', iconSize:[25,41], iconAnchor:[12,41], popupAnchor:[1,-34], shadowSize:[41,41] });
@@ -772,6 +792,58 @@
             }
         }
         function konumHatasi() {}
+
+        // Konum takibini başlat — native sarmalayıcı içindeyse (Capacitor)
+        // @capacitor-community/background-geolocation ile EKRAN KAPALIYKEN/
+        // UYGULAMA ARKA PLANDAYKEN de sürüyor (kalıcı bildirimli bir
+        // foreground service üzerinden). Düz tarayıcıda (web/test ortamı)
+        // navigator.geolocation.watchPosition'a düşer — bu sadece sekme
+        // açıkken çalışır, geliştirme/test için yeterli.
+        //
+        // ÖNEMLİ: Bu projenin önceki bir sürümünde arka plan takibi, uygulama
+        // Son Uygulamalar'dan kaydırılınca kesiliyordu — native tarafta
+        // (android/app/src/main/AndroidManifest.xml) BackgroundGeolocationService
+        // için android:stopWithTask="false" override'ı bu yüzden zorunlu.
+        function konumTakibiBaslat() {
+            if (konumTakibiBaslatildi) return;
+            if (NATIVE_MI() && BackgroundGeolocation) {
+                document.getElementById('arka-plan-bilgilendirme-modal').style.display = 'flex';
+            } else if (navigator.geolocation) {
+                konumTakibiBaslatildi = true;
+                tarayiciWatchId = navigator.geolocation.watchPosition(konumGuncelle, konumHatasi, { enableHighAccuracy: true });
+            }
+        }
+
+        // Prominent disclosure onaylandıktan SONRA native izin diyaloğu açılır
+        // (Google Play politikası: arka plan konum izni istenmeden önce
+        // kullanıcıya açık bilgilendirme şart).
+        function arkaPlanBilgilendirmeOnayla() {
+            document.getElementById('arka-plan-bilgilendirme-modal').style.display = 'none';
+            konumTakibiBaslatildi = true;
+            BackgroundGeolocation.addWatcher({
+                backgroundTitle: 'Güvenli Rota aktif',
+                backgroundMessage: 'Konumunuz paylaşılıyor. Durdurmak için Ayarlar > Çıkış Yap.',
+                requestPermissions: true,
+                stale: false,
+                distanceFilter: 15,
+            }, (pos, err) => {
+                if (err) { konumHatasi(err); return; }
+                if (pos) konumGuncelle({ coords: { latitude: pos.latitude, longitude: pos.longitude } });
+            }).then((id) => { bgWatcherId = id; }).catch((e) => konumHatasi(e));
+            // Pil optimizasyonu muafiyeti — best effort, sessizce; MIUI gibi
+            // OEM'lerde standart muafiyet yetmeyebilir ama burada sadece
+            // standart Android diyaloğu tetikleniyor.
+            PilOptimizasyonu?.durumKontrolEt().then((r) => {
+                if (!r?.muaf) PilOptimizasyonu.muafiyetIste().catch(() => {});
+            }).catch(() => {});
+        }
+
+        function konumTakibiDurdur() {
+            konumTakibiBaslatildi = false;
+            if (tarayiciWatchId !== null) { navigator.geolocation.clearWatch(tarayiciWatchId); tarayiciWatchId = null; }
+            if (bgWatcherId !== null) { const id = bgWatcherId; bgWatcherId = null; BackgroundGeolocation?.removeWatcher({ id }).catch(() => {}); }
+        }
+
         function ayarlariAc() {
             let secim = prompt("⚙️ GÜVENLİ ROTA AYARLARI ⚙️\n\n1 - Kendi Telefon Numaramı Kaydet\n2 - Acil Durum Kişisini Seç (gruptan)\n3 - Çıkış Yap / Hesap Değiştir\n\nYapmak istediğiniz işlemin numarasını yazın:");
             if (secim == "1") {
@@ -779,6 +851,7 @@
             } else if (secim == "2") {
                 acilDurumKisisiSec();
             } else if (secim == "3") {
+                konumTakibiDurdur();
                 auth.signOut().then(() => location.reload());
             }
         }
