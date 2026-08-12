@@ -258,7 +258,7 @@
         let kullaniciAdi = "", kullaniciUid = "";
         let harita, riskKatmani, canliTakipIkonlari = {};
         let guncelEnlem = 0, guncelBoylam = 0;
-        let acilTelemetriInterval = null, acilDokumanId = null;
+        let sonAcilGuncelleme = 0, acilDokumanId = null;
         let guvenPuani = 50, isPremium = false, isAileUye = false;
         let bannerTimeout = null, ilkYukleme = true;
         let cihazTokeni = "";   // YENİ: FCM token burada saklanır
@@ -283,13 +283,13 @@
         let cizimRenk = '#28a745';
         let guvenliPolygonlar = {};  // { uyeUid: L.polygon }
         let guvenliNoktalarMap = {}; // { uyeUid: [{lat, lng}] }
-        let guvenliBolyeKontrolInterval = null;
+        let guvenliBolyeDinleyici = null;
         let guvenliBolyeBannerGosteriyor = false;
         let disaridaOlanlar = {}; // Bölge dışına çıkmış kişileri takip eder (tekrar ses çalmasını önler)
         let grupUyeler = {}; // { uid: {isim, enlem, boylam} }
 
         // Aile takip
-        let aktifGrupKodu = null, aileKonumInterval = null;
+        let aktifGrupKodu = null, sonAileGuncelleme = 0;
         let aileIkonlari = {}, aileUyelerDinleyici = null;
         const uye_renkleri = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
         const gb_renkleri  = ['#e74c3c','#3498db','#2ecc71','#f39c12','#9b59b6','#1abc9c']; // polygon renkleri
@@ -528,12 +528,22 @@
                 }).catch(() => {});
         }
 
-        // Her üyeyi kendi bölgesiyle kontrol et
+        // Her üyeyi kendi bölgesiyle kontrol et.
+        //
+        // ÖNEMLİ: Bu eskiden 30sn'lik bir setInterval ile Firestore'u polluyordu.
+        // Uygulama arka plana alınıp WebView sayfası "hidden" olunca Chromium
+        // setInterval'ları ciddi şekilde kısıyor/durduruyor (native foreground
+        // servis çalışsa bile) — bu yüzden ekran kapatılınca güvenli bölge
+        // çıkış uyarıları hiç gelmiyordu. onSnapshot gerçek zamanlı dinleyicisi
+        // ise Firestore SDK'nın kendi ağ kanalı üzerinden tetikleniyor, JS
+        // timer'a bağlı değil — arka planda da güvenilir çalışıyor (aynı
+        // yaklaşım aileUyelerDinle'de zaten kullanılıyordu).
         function guvenliBolyeKontrolBaslat() {
-            if (guvenliBolyeKontrolInterval) clearInterval(guvenliBolyeKontrolInterval);
-            guvenliBolyeKontrolInterval = setInterval(() => {
-                if (!aktifGrupKodu || Object.keys(guvenliNoktalarMap).length === 0) return;
-                db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').get().then((snapshot) => {
+            if (guvenliBolyeDinleyici) { guvenliBolyeDinleyici(); guvenliBolyeDinleyici = null; }
+            if (!aktifGrupKodu) return;
+            guvenliBolyeDinleyici = db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler')
+                .onSnapshot((snapshot) => {
+                    if (Object.keys(guvenliNoktalarMap).length === 0) return;
                     let disaridakiIsimler = [];
                     let yeniDisariCikan = false;
                     snapshot.forEach((doc) => {
@@ -567,8 +577,7 @@
                         banner.style.display = 'none';
                         guvenliBolyeBannerGosteriyor = false;
                     }
-                }).catch(() => {});
-            }, 30000);
+                }, () => {});
         }
 
         // Premium kontrolü
@@ -669,19 +678,33 @@
             db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').doc(kullaniciUid).delete().then(() => {
                 if (isAileUye) db.collection('kullanicilar').doc(kullaniciUid).set({ aile_uye: false }, { merge: true }).then(() => { isAileUye = false; });
                 localStorage.removeItem('aile_grup_kodu_' + kullaniciUid);
-                if (aileKonumInterval) { clearInterval(aileKonumInterval); aileKonumInterval = null; }
                 if (aileUyelerDinleyici) { aileUyelerDinleyici(); aileUyelerDinleyici = null; }
+                if (guvenliBolyeDinleyici) { guvenliBolyeDinleyici(); guvenliBolyeDinleyici = null; }
                 Object.values(aileIkonlari).forEach(ikon => harita && harita.removeLayer(ikon));
                 aileIkonlari = {}; aktifGrupKodu = null;
                 try { AndroidBridge.grupKodunuSil(); } catch(e) {}
                 aileModalKapat(); alert('Gruptan çıkıldı.');
             });
         }
+        // ÖNEMLİ: Bu eskiden 10sn'lik bir setInterval ile Firestore'a konum
+        // yazıyordu — arka planda WebView timer kısıtlaması yüzünden bu da
+        // güvenilir çalışmıyordu (bkz. guvenliBolyeKontrolBaslat üstündeki not).
+        // Şimdi aktifGrupKodu'nu ayarlayıp konumu native/browser konum
+        // güncellemesi geldikçe konumGuncelle() içinden aileKonumPushEt() ile
+        // gönderiyoruz — bu, timer'a değil gerçek konum olayına bağlı.
         function aileKonumGuncellemeBaslat(kod) {
-            if (aileKonumInterval) clearInterval(aileKonumInterval);
-            aileKonumInterval = setInterval(() => {
-                if (guncelEnlem !== 0 && kod) db.collection('aile_gruplari').doc(kod).collection('uyeler').doc(kullaniciUid).update({ enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
-            }, 10000);
+            aktifGrupKodu = kod;
+            sonAileGuncelleme = 0; // bir sonraki konum güncellemesinde hemen gönder
+            aileKonumPushEt();
+        }
+        function aileKonumPushEt() {
+            if (!aktifGrupKodu || guncelEnlem === 0) return;
+            let simdi = Date.now();
+            if (simdi - sonAileGuncelleme < 8000) return;
+            sonAileGuncelleme = simdi;
+            db.collection('aile_gruplari').doc(aktifGrupKodu).collection('uyeler').doc(kullaniciUid)
+                .update({ enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() })
+                .catch(() => {});
         }
         function aileUyelerDinle(kod) {
             if (aileUyelerDinleyici) aileUyelerDinleyici();
@@ -791,6 +814,12 @@
                 setTimeout(kayitliGuvenliBolyeYukle, 2500);
                 harita.on('click', function(e) { if (cizimModu) cizimHaritaTikla(e); });
             }
+            // Aile takibi ve acil durum yayını, artık bu native/browser konum
+            // olayına bağlı (bkz. aileKonumPushEt / acilTelemetriPushEt üstündeki
+            // notlar) — arka planda setInterval yerine bu güvenilir tetikleyici
+            // kullanılıyor.
+            aileKonumPushEt();
+            if (acilDokumanId) acilTelemetriPushEt();
         }
         function konumHatasi() {}
 
@@ -947,11 +976,26 @@
         function tehlikeYokBildir(rId) { if (localStorage.getItem('tehlike_yok_'+rId)) { alert("Zaten bildirim yaptınız!"); return; } db.collection("riskler").doc(rId).update({ dogrulama:firebase.firestore.FieldValue.increment(-1) }).then(() => { localStorage.setItem('tehlike_yok_'+rId,'true'); puanGuncelle(1); }); }
         function puanGuncelle(deger) { guvenPuani += deger; localStorage.setItem('guvenPuani', guvenPuani); document.getElementById('puan-degeri').innerText = guvenPuani; }
 
+        // ÖNEMLİ: Bu eskiden navigator.geolocation.getCurrentPosition'ı 4sn'de
+        // bir setInterval ile çağırıyordu. navigator.geolocation, WebView
+        // arka plana alınıp sayfa "hidden" olunca çalışmayı durduruyor —
+        // native BackgroundGeolocation eklentisinden tamamen bağımsız bir API
+        // olduğu için foreground servis çalışsa bile etkilenmiyordu. Bunun
+        // yerine konumGuncelle() içinden (native/browser watcher'ın gerçek
+        // konum olaylarıyla) tetiklenen throttled bir push kullanıyoruz.
+        function acilTelemetriPushEt() {
+            if (!acilDokumanId) return;
+            let simdi = Date.now();
+            if (simdi - sonAcilGuncelleme < 4000) return;
+            sonAcilGuncelleme = simdi;
+            db.collection("acil_durumlar").doc(acilDokumanId).update({ enlem: guncelEnlem, boylam: guncelBoylam, tarih: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
+        }
         document.getElementById('acil-buton').addEventListener('click', function() {
             let buton = document.getElementById('acil-buton');
-            if (acilTelemetriInterval) {
-                clearInterval(acilTelemetriInterval); acilTelemetriInterval = null;
-                if (acilDokumanId) { db.collection("acil_durumlar").doc(acilDokumanId).update({ aktif:false }).then(() => db.collection("acil_durumlar").doc(acilDokumanId).delete()); acilDokumanId = null; }
+            if (acilDokumanId) {
+                let kapanacakId = acilDokumanId;
+                acilDokumanId = null;
+                db.collection("acil_durumlar").doc(kapanacakId).update({ aktif:false }).then(() => db.collection("acil_durumlar").doc(kapanacakId).delete());
                 buton.style.backgroundColor = "#ff0033"; buton.innerText = "🚨 ACİL DURUM";
                 alert("Acil durum yayını kapatıldı. Güvendesiniz."); return;
             }
@@ -964,7 +1008,7 @@
                 buton.style.backgroundColor = "#000"; buton.innerText = "🛑 YAYINI KAPAT";
                 db.collection("acil_durumlar").add({ isim:kullaniciAdi, enlem:guncelEnlem, boylam:guncelBoylam, aktif:true, grupKodu:(aktifGrupKodu||""), tarih:firebase.firestore.FieldValue.serverTimestamp() }).then((docRef) => {
                     acilDokumanId = docRef.id;
-                    acilTelemetriInterval = setInterval(() => { navigator.geolocation.getCurrentPosition((pos) => { guncelEnlem = pos.coords.latitude; guncelBoylam = pos.coords.longitude; db.collection("acil_durumlar").doc(docRef.id).update({ enlem:guncelEnlem, boylam:guncelBoylam, tarih:firebase.firestore.FieldValue.serverTimestamp() }); }, null, { enableHighAccuracy:true }); }, 4000);
+                    sonAcilGuncelleme = Date.now();
                     if (acilNumara) {
                         let mesaj = "🚨 ACİL DURUM! Lütfen bana ulaşın. Güvende hissetmiyorum. Konumum: ";
                         window.open("https://wa.me/" + acilNumara + "?text=" + encodeURIComponent(mesaj + "https://maps.google.com/?q=" + guncelEnlem + "," + guncelBoylam), '_blank');
