@@ -764,6 +764,7 @@
             kullaniciAdi = kullanici.displayName || kullanici.email; kullaniciUid = kullanici.uid;
             localStorage.setItem('kullanici_adi', kullaniciAdi);
             try { AndroidBridge.kullaniciAdiniKaydet(kullaniciAdi); } catch(e) {}
+            try { AndroidBridge.kullaniciUidKaydet(kullaniciUid); } catch(e) {}
             tokeniIste();   // YENİ: giriş yapınca FCM token'ı iste
             document.getElementById('giris-ekrani').style.display = 'none'; document.getElementById('dogrulama-ekrani').style.display = 'none';
             guvenPuani = parseInt(localStorage.getItem('guvenPuani')) || 50;
